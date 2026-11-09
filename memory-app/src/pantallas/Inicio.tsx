@@ -18,7 +18,7 @@ export default function Inicio() {
   const vacia = datos.personas.length === 0 && datos.casas.length === 0;
 
   return (
-    <main className="flex min-h-screen flex-col gap-space-lg bg-surface px-margin py-space-lg">
+    <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
       <h1 className="text-headline-md text-primary">Memory</h1>
 
       <input

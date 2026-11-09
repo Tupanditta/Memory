@@ -218,30 +218,32 @@ Resultado: `npm run typecheck` sin errores; `npm test` 10 archivos, 106 tests pa
 ---
 
 #### Sprint 8. Exportar e importar
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Instalar `@capacitor/share` (versión en [design.md](design.md)); elegir el archivo con `<input type="file">`.
-- [ ] `intercambioService.exportar`: genera `memory-export.json` con `version`, `exportadoEn`, `personas` y `casas`, y lo comparte con `@capacitor/share`.
-- [ ] `intercambioService.importar`: valida el archivo y añade solo lo que no existe por `id`, sin modificar ni borrar datos existentes.
-- [ ] Una casa importada se añade solo si todos sus miembros existen (ya en la app o en el mismo archivo).
-- [ ] Guardar el resultado como una sola operación segura de varios archivos.
-- [ ] Botones "Exportar" e "Importar" en `pantallas/Ajustes.tsx`, con resumen de añadidos y omitidos.
+- [x] Instalar `@capacitor/share` (versión en [design.md](design.md)); elegir el archivo con `<input type="file">`.
+- [x] `intercambioService.exportar`: genera `memory-export.json` con `version`, `exportadoEn`, `personas` y `casas`, y lo comparte con `@capacitor/share`.
+- [x] `intercambioService.importar`: valida el archivo y añade solo lo que no existe por `id`, sin modificar ni borrar datos existentes.
+- [x] Una casa importada se añade solo si todos sus miembros existen (ya en la app o en el mismo archivo).
+- [x] Guardar el resultado como una sola operación segura de varios archivos.
+- [x] Botones "Exportar" e "Importar" en `pantallas/Ajustes.tsx`, con resumen de añadidos y omitidos.
 
 Tests de validación
-- [ ] T8.1 Exportar produce un JSON con `version`, `personas` y `casas` iguales a los datos actuales (RF11, CU11).
-- [ ] T8.2 Exportar sin datos produce listas vacías y no falla.
-- [ ] T8.3 Exportar y luego importar en una app vacía reproduce exactamente los mismos datos (RF12).
-- [ ] T8.4 Importar el mismo archivo dos veces no duplica nada: la segunda vez todo se omite (R11).
-- [ ] T8.5 Importar nunca modifica una persona o casa existente con el mismo `id`, aunque el archivo tenga otros valores (R11).
-- [ ] T8.5b Una persona del archivo con distinto `id` pero el mismo nombre (sin mayúsculas ni acentos) que una existente se omite y no se duplica (RF12).
-- [ ] T8.5c Una casa del archivo con distinto `id` pero el mismo apodo que una existente se omite.
-- [ ] T8.5d Una casa nueva cuyo miembro es una persona duplicada se importa apuntando a la persona existente.
-- [ ] T8.6 Importar añade las personas nuevas y conserva las existentes (RF12).
-- [ ] T8.7 Una casa del archivo con un miembro inexistente en la app y en el archivo se omite; las demás se importan (RNF10).
-- [ ] T8.8 Un archivo inválido, sin `version` o con estructura incorrecta se rechaza y no cambia ningún dato.
-- [ ] T8.9 Si falla el guardado durante la importación, no se añade nada (RNF8, RNF9).
-- [ ] T8.10 El resumen muestra cuántas personas y casas se añadieron y cuántas se omitieron (CU12).
+- [x] T8.1 Exportar produce un JSON con `version`, `personas` y `casas` iguales a los datos actuales (RF11, CU11).
+- [x] T8.2 Exportar sin datos produce listas vacías y no falla.
+- [x] T8.3 Exportar y luego importar en una app vacía reproduce exactamente los mismos datos (RF12).
+- [x] T8.4 Importar el mismo archivo dos veces no duplica nada: la segunda vez todo se omite (R11).
+- [x] T8.5 Importar nunca modifica una persona o casa existente con el mismo `id`, aunque el archivo tenga otros valores (R11).
+- [x] T8.5b Una persona del archivo con distinto `id` pero el mismo nombre (sin mayúsculas ni acentos) que una existente se omite y no se duplica (RF12).
+- [x] T8.5c Una casa del archivo con distinto `id` pero el mismo apodo que una existente se omite.
+- [x] T8.5d Una casa nueva cuyo miembro es una persona duplicada se importa apuntando a la persona existente.
+- [x] T8.6 Importar añade las personas nuevas y conserva las existentes (RF12).
+- [x] T8.7 Una casa del archivo con un miembro inexistente en la app y en el archivo se omite; las demás se importan (RNF10).
+- [x] T8.8 Un archivo inválido, sin `version` o con estructura incorrecta se rechaza y no cambia ningún dato.
+- [x] T8.9 Si falla el guardado durante la importación, no se añade nada (RNF8, RNF9).
+- [x] T8.10 El resumen muestra cuántas personas y casas se añadieron y cuántas se omitieron (CU12).
+
+Resultado: `npm run typecheck` sin errores; `npm test` 12 archivos, 137 tests pasan (106 de los sprints 0 a 7, 25 en `intercambio.test.ts` y 6 en `pantallasIntercambio.test.tsx`: T8.1 a T8.10, con T8.8 en diez casos (no es JSON, no es objeto, sin `version`, otra versión, `personas` no es lista, sin `casas`, persona sin nombre, fecha imposible, casa vacía, casa sin dirección), más fallo al crear el archivo (T8.2b), `CompartidorCapacitor` con plugins simulados (caché, menú, cancelar no es error), campos ajenos al modelo descartados y cancelar la elección de archivo); suite completa ejecutada 3 veces seguidas sin fallos; `npm run sync` genera `dist/` y registra `@capacitor/share@8.0.3` en el proyecto Android. Se comprobó que T8.5b y T8.5d fallan si se quita la comparación por nombre. Código nuevo: `servicios/intercambioService.ts` y `servicios/archivosExternos.ts`; `ProveedorApp` recibe `compartidor` y `selector` en `externos` y ofrece `importarDesdeArchivo()`; Ajustes tiene "Exportar" e "Importar" con el resumen. El menú de compartir y el selector de archivos reales se prueban en el móvil (T13).
 
 ---
 
@@ -253,7 +255,7 @@ Rehace la capa visual según el prototipo ([design.md](design.md), sección "Int
 Tareas
 - [ ] Comprobar el punto de partida: existe `memory-app/`, `npm install` termina bien y `npm test` y `npm run typecheck` pasan con la suite de los sprints 0 a 8. Si `memory-app/` no existe o la suite falla, parar y preguntar.
 - [ ] `tailwind.config.ts` con todos los tokens de design.md (colores, tipografía, espacios, radios y sombras con nombre).
-- [ ] Cargar Plus Jakarta Sans y Material Symbols desde sus paquetes (`estilos.css`) y mantener el splash (`@capacitor/splash-screen`, fondo `#FAF8FF`) hasta tener fuentes y datos; iconos oscuros en la barra de estado y borde a borde con márgenes seguros.
+- [ ] Cargar Material Symbols desde sus paquetes (`estilos.css`) y mantener el splash (`@capacitor/splash-screen`, fondo `#FAF8FF`) hasta tener fuentes y datos; iconos oscuros en la barra de estado y borde a borde con márgenes seguros.
 - [ ] `utilidades/presentacion.ts`: `saludo(hora)`, `colorAvatar(id)`, `textoMiembros(nombres)`, `signoZodiacal(dia, mes)`, `edad(fecha, hoy)`, `diasHasta(fecha, hoy)` y `etiquetaProximaFecha(fecha, hoy)` ("En 4 días", "Hoy", "Mañana").
 - [ ] Componentes de design.md: `Cabecera`, `BarraPestanas` (en las rutas de pestaña), `Tarjeta`, `Boton`, `Chip`, `Avatar`, `FilaAvatares`, `CabeceraSeccion`, `CabeceraTarjeta`, `CirculoDifuso`, `Campo`, `CamposDireccion`, `ChipSeleccion`, `FilaPersonaSeleccionable`, `HojaInferior`, `DialogoConfirmacion`, `BannerError`, `AvisoEmergente`, `EstadoVacio`, `Icono`.
 - [ ] Efecto de escala al pulsar (`active:scale-*`, 150 ms) y zona táctil mínima de 48 px; el botón atrás de Android (`@capacitor/app`) cierra hojas y diálogos y vuelve atrás.
@@ -261,7 +263,7 @@ Tareas
 
 Tests de validación
 - [ ] T9.0 La suite de los sprints 0 a 8 sigue pasando completa con los componentes nuevos (adaptando solo las búsquedas de texto, regla 8).
-- [ ] T9.1 Los colores, radios, espacios y tipografía de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/`.
+- [ ] T9.1 Los colores, radios, espacios y tamaños de letra de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/`; `fontFamily` usa Lora y Playfair Display (desviación de design.md).
 - [ ] T9.2 Todos los nombres de icono usados existen en la lista del paquete `material-symbols`.
 - [ ] T9.3 `saludo`: 06:00 y 11:59 dan "Buenos días"; 12:00 y 20:59 "Buenas tardes"; 21:00 y 05:59 "Buenas noches".
 - [ ] T9.4 `colorAvatar` devuelve siempre el mismo color para el mismo `id` y una de las cinco parejas fondo/texto de la paleta de design.md.

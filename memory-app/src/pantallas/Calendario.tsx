@@ -15,7 +15,7 @@ export default function Calendario() {
   const entradas = entradasCalendario(datos.personas, new Date());
 
   return (
-    <main className="flex min-h-screen flex-col gap-space-lg bg-surface px-margin py-space-lg">
+    <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
       <h1 className="text-headline-md text-primary">Calendario</h1>
       <p className="text-body-md text-on-surface-variant">Aviso el día anterior a las {datos.ajustes.horaNotificacion}</p>
 

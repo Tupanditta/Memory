@@ -69,31 +69,31 @@ const prototipo: NonNullable<Config["theme"]>["extend"] = {
   },
   "fontFamily": {
     "body-sm": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ],
     "body-md": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ],
     "label-sm": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ],
     "headline-lg": [
-      "Plus Jakarta Sans"
+      "Playfair Display", "Georgia", "serif"
     ],
     "label-lg": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ],
     "headline-md": [
-      "Plus Jakarta Sans"
+      "Playfair Display", "Georgia", "serif"
     ],
     "label-md": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ],
     "headline-sm": [
-      "Plus Jakarta Sans"
+      "Playfair Display", "Georgia", "serif"
     ],
     "body-lg": [
-      "Plus Jakarta Sans"
+      "Lora", "Georgia", "serif"
     ]
   },
   "fontSize": {

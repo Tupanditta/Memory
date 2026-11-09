@@ -25,14 +25,28 @@ const PESTANAS = [
   { ruta: "/ajustes", nombre: "Ajustes" },
 ];
 
-/** Pantallas de pestaña con su barra (versión básica; el Sprint 9 le da el diseño del prototipo). */
+/**
+ * Pantallas de pestaña con su barra (versión básica; el Sprint 9 le da el diseño del prototipo).
+ * La barra flota sobre el margen seguro inferior, separada del borde; el contenido deja
+ * hueco debajo para que la barra no lo tape.
+ */
 function ConPestanas() {
   return (
     <>
-      <Outlet />
-      <nav aria-label="Pestañas" className="sticky bottom-0 flex justify-around bg-surface-container-lowest py-space-sm shadow-sm">
+      <div className="pb-[calc(var(--margen-seguro-inf)+6.5rem)]">
+        <Outlet />
+      </div>
+      <nav
+        aria-label="Pestañas"
+        className="fixed inset-x-margin bottom-[calc(var(--margen-seguro-inf)+1.5rem)] mx-auto flex max-w-sm justify-around rounded-full bg-surface-container-lowest px-space-sm py-space-sm shadow-lg"
+      >
         {PESTANAS.map(({ ruta, nombre }) => (
-          <NavLink key={ruta} to={ruta} end className={({ isActive }) => `rounded-full px-space-md py-space-xs text-label-md ${isActive ? "text-primary" : "text-on-surface-variant"}`}>
+          <NavLink
+            key={ruta}
+            to={ruta}
+            end
+            className={({ isActive }) => `rounded-full px-space-md py-space-sm text-base font-bold ${isActive ? "bg-primary/10 text-primary" : "text-on-surface-variant"}`}
+          >
             {nombre}
           </NavLink>
         ))}

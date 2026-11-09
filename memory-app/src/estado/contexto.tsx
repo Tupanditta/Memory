@@ -5,7 +5,9 @@ import type { Resultado } from "../modelos/tipos";
 import type { Almacen } from "../repositorio/almacen";
 import { crearAlmacen, Repositorio, type Datos } from "../repositorio/repositorio";
 import { AjustesService } from "../servicios/ajustesService";
+import { crearCompartidor, SelectorArchivoInput, type Compartidor, type SelectorArchivo } from "../servicios/archivosExternos";
 import { CasasService } from "../servicios/casasService";
+import { IntercambioService, type ResumenImportacion } from "../servicios/intercambioService";
 import { NotificacionesService, type EstadoNotificaciones } from "../servicios/notificacionesService";
 import { crearNotificador, type Notificador } from "../servicios/notificador";
 import { PersonasService } from "../servicios/personasService";
@@ -59,6 +61,7 @@ interface Servicios {
   casas: CasasService;
   ajustes: AjustesService;
   notificaciones: NotificacionesService;
+  intercambio: IntercambioService;
 }
 
 export interface ValorContexto {
@@ -75,11 +78,15 @@ export interface ValorContexto {
   ejecutar<T>(operacion: (servicios: Servicios) => Promise<Resultado<T>>): Promise<Resultado<T>>;
   limpiarError(): void;
   limpiarAviso(): void;
+  /** Elige un archivo e importa su contenido; `null` si el usuario cancela. */
+  importarDesdeArchivo(): Promise<Resultado<ResumenImportacion> | null>;
 }
 
 /** Lo que toca el sistema; se inyecta en las pruebas. */
 export interface Externos {
   notificador?: Notificador;
+  compartidor?: Compartidor;
+  selector?: SelectorArchivo;
 }
 
 export const AVISO_SIN_PERMISO =
@@ -99,7 +106,7 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   const [estado, despachar] = useReducer(reducer, estadoInicial);
   const servicios = useRef<Servicios | null>(null);
   const almacenElegido = useRef(almacen);
-  const notificadorElegido = useRef(externos?.notificador);
+  const externosElegidos = useRef(externos);
   /** El aviso de permiso denegado se muestra una vez por sesión. */
   const avisoMostrado = useRef(false);
 
@@ -118,7 +125,8 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
         personas: new PersonasService(tienda),
         casas: new CasasService(tienda),
         ajustes: new AjustesService(tienda),
-        notificaciones: new NotificacionesService(notificadorElegido.current ?? crearNotificador()),
+        notificaciones: new NotificacionesService(externosElegidos.current?.notificador ?? crearNotificador()),
+        intercambio: new IntercambioService(tienda, externosElegidos.current?.compartidor ?? crearCompartidor()),
       };
       despachar({ tipo: "cargado", datos: tienda.datos });
     });
@@ -155,6 +163,21 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   const limpiarError = useCallback(() => despachar({ tipo: "limpiarError" }), []);
   const limpiarAviso = useCallback(() => despachar({ tipo: "limpiarAviso" }), []);
 
+  const importarDesdeArchivo = useCallback(async (): Promise<Resultado<ResumenImportacion> | null> => {
+    const selector = externosElegidos.current?.selector ?? new SelectorArchivoInput();
+    let texto: string | null;
+    try {
+      texto = await selector.elegir();
+    } catch {
+      const resultado: Resultado<ResumenImportacion> = { ok: false, error: "No se pudo leer el archivo" };
+      despachar({ tipo: "error", error: resultado.error });
+      return resultado;
+    }
+    if (texto === null) return null;
+    const contenido = texto;
+    return ejecutar((s) => s.intercambio.importar(contenido));
+  }, [ejecutar]);
+
   if (estado.fase === "cargando") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-surface px-margin">
@@ -182,6 +205,7 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
     ejecutar,
     limpiarError,
     limpiarAviso,
+    importarDesdeArchivo,
   };
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }

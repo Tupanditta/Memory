@@ -20,7 +20,7 @@ Define la estructura y las tecnologías de la app. Debe estar aprobado antes de 
 | Estado | React Context + `useReducer` | App pequeña; sin librería extra |
 | Pruebas | Vitest + jsdom + Testing Library (`@testing-library/react`, `user-event`, `jest-dom`) | Probar lógica, repositorio y pantallas; Vitest usa la misma configuración que Vite |
 | Estilos | Tailwind CSS 3 con el bloque `tailwind.config` del prototipo copiado en `memory-app/tailwind.config.ts` | El prototipo está escrito en Tailwind 3: sus clases se copian tal cual y se ven igual |
-| Tipografía | Plus Jakarta Sans (400, 500, 600, 700 y cursiva) con `@fontsource/plus-jakarta-sans`, empaquetada en la app | Es la fuente del prototipo; empaquetada porque la app funciona sin conexión (RNF2) |
+| Tipografía | Lora (texto: 400, 500, 600, 700 y cursiva 400) y Playfair Display (títulos: 600 y 700) con `@fontsource/lora` y `@fontsource/playfair-display`, empaquetadas en la app | Petición del usuario (2026-11-09): una tipografía formal, menos sencilla que la del prototipo (ver Desviaciones); empaquetadas porque la app funciona sin conexión (RNF2) |
 | Iconos | Material Symbols Outlined del paquete `material-symbols`, empaquetada | Es la fuente de iconos del prototipo, con los mismos nombres y el eje `FILL` |
 | Efectos | CSS: degradados, `backdrop-filter` (cristal), `box-shadow`, transiciones y animaciones | Sin librerías: el WebView los soporta |
 
@@ -39,7 +39,7 @@ Versiones exactas (fijadas en `memory-app/package.json`, sin `^` ni `~`):
 | react / react-dom | 19.3.1 |
 | react-router | 8.5.1 |
 | tailwindcss / postcss / autoprefixer | 3.4.19 / 8.5.32 / 10.6.2 |
-| @fontsource/plus-jakarta-sans | 5.3.0 |
+| @fontsource/lora / @fontsource/playfair-display | 5.3.0 / 5.3.0 |
 | material-symbols | 0.48.3 |
 | typescript | 6.0.3 |
 | vitest / jsdom | 5.1.0 / 31.0.0 |
@@ -183,7 +183,7 @@ Colores (nombres del bloque `tailwind.config` del prototipo; en las clases van e
 | `inverseSurface` / `inverseOnSurface` | `#272F4A` / `#EFF0FF` | Aviso emergente; fondo de hojas (30 %) |
 | `inversePrimary` / `surfaceDim` / `surfaceTint` | `#B7C4FF` / `#D1D9FB` / `#3355C6` | Reservados (están en el prototipo, no se usan) |
 
-Tipografía: todo en Plus Jakarta Sans, cargada con `@fontsource/plus-jakarta-sans` (pesos 400, 500, 600 y 700, y cursiva 400). Los estilos son las clases `text-*`/`font-*` del bloque `fontSize`/`fontFamily` del prototipo; el peso se puede cambiar con `font-medium`, `font-bold`… como hace el prototipo. Interletra solo donde el prototipo la pone (`tracking-tight`, `tracking-wide`, `tracking-wider`).
+Tipografía (desviación pedida por el usuario el 2026-11-09): texto en Lora (pesos 400, 500, 600 y 700, y cursiva 400) y títulos en Playfair Display (600 y 700), cargadas en `main.tsx` desde `@fontsource/lora` y `@fontsource/playfair-display`, con respaldo `Georgia, serif`. `estilos.css` pone Lora en `html` y Playfair Display en `h1`–`h3`; en `tailwind.config.ts`, `fontFamily` lleva Playfair Display en las claves `headline-*` y Lora en las demás. Los tamaños son las clases `text-*` del bloque `fontSize` del prototipo (sin cambios); el peso se puede cambiar con `font-medium`, `font-bold`… como hace el prototipo. Interletra solo donde el prototipo la pone (`tracking-tight`, `tracking-wide`, `tracking-wider`).
 
 | Estilo | Tamaño / interlínea (px) | Peso |
 |---|---|---|
@@ -230,7 +230,7 @@ Iconos: componente `Icono` que pinta `<span class="material-symbols-outlined">no
 ##### Esqueleto común
 
 - **Cabecera fija** (`componentes/Cabecera`, `header` del prototipo): alto 64 + margen seguro superior; fondo `surface` al 80 % con `backdrop-blur-xl` (respaldo `rgba(250,248,255,0.92)` si el WebView no soporta `backdrop-filter`); `shadow-cabecera`; padding lateral 20. En las pestañas, a la izquierda el texto "Memory" (`headline-sm`, `primary`, `tracking-tight`). En pantallas de pila, a la izquierda botón atrás de 44 × 44 circular con margen izquierdo −8 (icono `arrow_back` 22, `on-surface-variant`) y, separado 8, el título (`headline-sm`, `on-surface`, `tracking-tight`, ancho máx. 160, una línea con puntos suspensivos). Sin logotipo ni botón de perfil (Desviaciones).
-- **Márgenes seguros**: la app se dibuja bajo las barras del sistema (borde a borde) y respeta `env(safe-area-inset-top)` y `env(safe-area-inset-bottom)` (clases `pt-safe`/`pb-safe` del prototipo). Si el WebView no da esos valores, se usan las variables que inyecta Capacitor 8 en Android; se concreta en el Sprint 9.
+- **Márgenes seguros**: la app se dibuja bajo las barras del sistema (borde a borde) y respeta `env(safe-area-inset-top)` y `env(safe-area-inset-bottom)` (clases `pt-safe`/`pb-safe` del prototipo). Si el WebView no da esos valores, se usan las variables que inyecta Capacitor 8 en Android (`--safe-area-inset-*`, plugin `SystemBars`): `estilos.css` define `--margen-seguro-sup` y `--margen-seguro-inf` como el mayor de los dos. `#raiz` tiene padding superior = margen seguro + 16, para que el bloque superior no quede pegado a la barra de estado (petición del usuario, 2026-11-09).
 - **Cuerpo**: `<main>` con desplazamiento vertical, padding lateral 20 y padding superior = alto de la cabecera. Pantallas de pestaña: padding inferior 112 (`pb-28`) y separación vertical 24 entre bloques (`gap-space-lg`). Pantallas de pila: padding inferior = margen seguro + 40 (`pb-10`; formulario de casa + 32).
 - **Barra de pestañas** (`componentes/BarraPestanas`, en `App.tsx` solo para las rutas de pestaña): contenedor fijo con margen lateral 20 y 8 sobre el margen seguro inferior; barra de ancho máximo 384 centrada, alto 64, `rounded-full`, fondo blanco al 85 % con `backdrop-blur` (respaldo `rgba(255,255,255,0.92)`), `shadow-barra`, padding lateral 8, elementos repartidos (`justify-around`). Cada elemento (`NavLink`): mínimo 64 × 44, padding 16 × 6, `rounded-full`, icono 22 sobre etiqueta `label-sm` con separación 4. Activo: fondo `primary` al 10 %, icono y texto `primary` y `aria-current="page"`; inactivo: `on-surface-variant`. Destinos: "Inicio" (`cottage`), "Calendario" (`calendar_month`), "Ajustes" (`tune`). No aparece en `/persona/:id` ni en `/casa/:id`.
 - **Barra del sistema**: `@capacitor/status-bar` con iconos oscuros sobre fondo transparente.
@@ -363,6 +363,8 @@ Todo lo que no figura aquí se reproduce como en el prototipo.
 | Chip "Frecuente", barrio "Centro", "(Hermano)", "Hermana mayor"…, "Última actualización hace 3 días" | No existen; bajo el nombre en las filas de persona se muestra el apodo | El modelo no tiene esos campos |
 | Estrella en el avatar de Ana (sin regla) | Estrella = fecha a 7 días o menos | Se le da una regla con los datos que hay |
 | Punto verde junto al apodo de la casa (detalle de persona) | No existe | Sin significado en los datos |
+| Plus Jakarta Sans en todo | Lora en el texto y Playfair Display en los títulos | Petición del usuario (2026-11-09): tipografía formal, menos sencilla |
+| Barra de pestañas 8 sobre el margen seguro inferior; etiquetas `label-sm` | 24 sobre el margen seguro inferior; etiquetas de 16 px en negrita (`text-base font-bold`) | Petición del usuario (2026-11-09): barra más alta y texto del menú mayor |
 | Tipo de fecha "Santo" | Solo "Cumpleaños" y "Aniversario" | RF3, R5 |
 | Sin campo de etiqueta en las fechas | Campo "Etiqueta" opcional | Modelo de datos (RF3) |
 | "Añadir otra fecha" muestra una nota y no añade | Añade otra fecha al formulario | Una persona puede tener varias fechas |
@@ -384,7 +386,7 @@ Textos que el prototipo no tiene y añade la app (estados vacíos, errores, conf
 ##### Pruebas de interfaz
 
 - Cada pantalla se prueba con Testing Library (Vitest + jsdom) sobre los mismos casos que los sprints 5 a 8; los textos visibles pueden cambiar, pero cada acción conserva su nombre accesible (`aria-label` o texto del botón: "Añadir persona", "Añadir casa", "Guardar", "Exportar", "Importar", etc.) y las pruebas la buscan por rol y nombre (`getByRole("button", { name: "Guardar" })`).
-- `__tests__/tema.test.ts`: los colores, radios, espacios y tipografía de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/` (se leen del archivo y se comparan).
+- `__tests__/tema.test.ts`: los colores, radios, espacios y tamaños de letra de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/` (se leen del archivo y se comparan).
 - `__tests__/iconos.test.ts`: todos los nombres de icono usados existen en la lista del paquete `material-symbols`.
 - Reglas derivadas con tests unitarios: saludo por hora, textos de fecha (hoy / mañana / en N días, ≤ 7 días), formatos de fecha, signo zodiacal, edad, texto de miembros de una casa, contador "seleccionado(s)", `colorAvatar` estable.
 - jsdom no aplica CSS: las pruebas comprueban estructura, textos, estados (`aria-*`) y clases, no el aspecto. La fidelidad visual la comprueba el usuario comparando la vista previa web y el móvil con las capturas de `prototipo/`.
@@ -415,6 +417,14 @@ Textos que el prototipo no tiene y añade la app (estados vacíos, errores, conf
 - Paquetes: `@capacitor/share` (menú de compartir/guardar) y `@capacitor/filesystem` (archivo temporal). Elegir archivo no necesita paquete: el WebView de Capacitor abre el selector de archivos de Android.
 - **Exportar (CU11)**: `intercambioService` genera `memory-export.json` (`version`, `exportadoEn`, `personas`, `casas`) y lo comparte. No modifica los datos.
 - **Importar (CU12)**: valida el archivo (versión, estructura, validadores de modelos) y calcula en memoria el estado resultante: añade personas y casas que no existen; las existentes no se tocan. Persona duplicada: mismo `id` o mismo nombre normalizado. Casa duplicada: mismo `id` o mismo apodo normalizado. Antes de añadir casas, construye un mapa `idArchivo → idExistente` para las personas duplicadas y reescribe con él los miembros de las casas. Una casa solo se añade si todos sus miembros existen. Guarda `personas.json` y `casas.json` como una sola operación segura (ver Varios archivos). Devuelve el recuento de añadidos y omitidos.
+- Detalles fijados en el Sprint 8 (`servicios/intercambioService.ts`: `IntercambioService`, `leerExportacion`, `textoResumen`; `servicios/archivosExternos.ts`: `Compartidor`, `CompartidorCapacitor`, `CompartidorWeb`, `SelectorArchivo`, `SelectorArchivoInput`, `crearCompartidor`):
+  - Los duplicados se comprueban contra los datos de la app y contra lo ya añadido del mismo archivo (dos personas del archivo con el mismo nombre: se añade la primera y la segunda se omite y apunta a ella). Nombres y apodos se comparan sin espacios al principio ni al final, sin mayúsculas y sin acentos.
+  - Si un miembro de una casa lleva, tras el mapa, a una persona que ya está en la lista, se deja una sola vez.
+  - Se importan solo los campos del modelo; los campos de más del archivo se descartan.
+  - Si no hay nada que añadir, no se escribe ningún archivo. Solo se escriben los archivos que cambian.
+  - Cerrar el menú de compartir sin elegir (`Share canceled`) no es un error. Si no se puede escribir el archivo, se muestra "No se pudo crear el archivo de exportación".
+  - `SelectorArchivoInput` detecta la cancelación con el evento `cancel` del `<input>`; `importarDesdeArchivo()` devuelve `null` si se cancela y no muestra nada.
+  - En Ajustes, el resumen se muestra en un párrafo con `aria-label` "Resumen de importación"; los errores salen en el banner de error. Tras importar, las notificaciones se reprograman como tras cualquier guardado que cambie personas.
 
 #### Notificaciones
 

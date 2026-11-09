@@ -32,7 +32,7 @@ export default function Persona() {
       return r.ok;
     };
     return (
-      <main className="flex min-h-screen flex-col gap-space-lg bg-surface px-margin py-space-lg">
+      <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
         <h1 className="text-headline-md text-on-surface">Nueva persona</h1>
         <FormularioPersona onGuardar={crear} onCancelar={volver} />
       </main>
@@ -43,7 +43,7 @@ export default function Persona() {
   if (!persona) {
     if (saliendo.current) return null;
     return (
-      <main className="flex min-h-screen flex-col gap-space-md bg-surface px-margin py-space-lg">
+      <main className="flex flex-col gap-space-md bg-surface px-margin py-space-lg">
         <p className="text-body-md text-on-surface-variant">Esta persona no existe</p>
         <Link to="/" className="text-label-lg text-primary">
           Volver
@@ -59,7 +59,7 @@ export default function Persona() {
       return r.ok;
     };
     return (
-      <main className="flex min-h-screen flex-col gap-space-lg bg-surface px-margin py-space-lg">
+      <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
         <h1 className="text-headline-md text-on-surface">Editar persona</h1>
         <FormularioPersona inicial={persona} onGuardar={guardar} onCancelar={() => setEditando(false)} />
       </main>
@@ -79,7 +79,7 @@ export default function Persona() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col gap-space-lg bg-surface px-margin py-space-lg">
+    <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
       <Link to="/" aria-label="Volver" className="text-label-lg text-primary">
         ← Volver
       </Link>

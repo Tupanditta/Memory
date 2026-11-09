@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /*
+     * Márgenes seguros (la app se dibuja borde a borde). `env()` los da el WebView;
+     * si no, Capacitor 8 (SystemBars) inyecta `--safe-area-inset-*` en Android.
+     */
+    --margen-seguro-sup: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+    --margen-seguro-inf: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+  }
+
+  /* Tipografía: Lora para el texto y Playfair Display para los títulos (empaquetadas, sin red). */
+  html {
+    font-family: "Lora", Georgia, serif;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: "Playfair Display", Georgia, serif;
+  }
+
+  /* El bloque superior empieza bajo la barra de estado, con algo de aire. */
+  #raiz {
+    padding-top: calc(var(--margen-seguro-sup) + 1rem);
+  }
+}
