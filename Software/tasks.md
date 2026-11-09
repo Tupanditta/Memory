@@ -149,23 +149,25 @@ Resultado: `npm run typecheck` sin errores; `npm test` 6 archivos, 62 tests pasa
 ---
 
 #### Sprint 5. Estado y pantallas de personas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Contexto y reducer que cargan datos al arrancar.
-- [ ] El estado solo se actualiza con resultado `ok` del servicio.
-- [ ] Pantalla de búsqueda (`pantallas/Inicio.tsx`) con lista de personas y casas.
-- [ ] Pantalla de detalle y formulario de persona, con fechas.
-- [ ] Mensaje de error visible cuando un guardado falla.
-- [ ] Textos en español.
+- [x] Contexto y reducer que cargan datos al arrancar.
+- [x] El estado solo se actualiza con resultado `ok` del servicio.
+- [x] Pantalla de búsqueda (`pantallas/Inicio.tsx`) con lista de personas y casas.
+- [x] Pantalla de detalle y formulario de persona, con fechas.
+- [x] Mensaje de error visible cuando un guardado falla.
+- [x] Textos en español.
 
 Tests de validación
-- [ ] T5.1 Al arrancar, la UI muestra las personas del JSON (RNF7).
-- [ ] T5.2 Crear una persona desde el formulario la muestra en la lista y está en el JSON (CU1).
-- [ ] T5.3 Si el servicio devuelve error, la persona no aparece en la lista y se ve un mensaje de error (RNF9).
-- [ ] T5.4 Escribir en el buscador filtra la lista; ver una persona muestra todos sus datos: su dirección, fechas y todas sus casas con dirección y convivientes (CU3, RF7).
-- [ ] T5.5 Editar y borrar persona actualizan la lista y el JSON (CU2).
-- [ ] T5.6 Con el nombre vacío, el formulario no guarda y pide el nombre (CU1).
+- [x] T5.1 Al arrancar, la UI muestra las personas del JSON (RNF7).
+- [x] T5.2 Crear una persona desde el formulario la muestra en la lista y está en el JSON (CU1).
+- [x] T5.3 Si el servicio devuelve error, la persona no aparece en la lista y se ve un mensaje de error (RNF9).
+- [x] T5.4 Escribir en el buscador filtra la lista; ver una persona muestra todos sus datos: su dirección, fechas y todas sus casas con dirección y convivientes (CU3, RF7).
+- [x] T5.5 Editar y borrar persona actualizan la lista y el JSON (CU2).
+- [x] T5.6 Con el nombre vacío, el formulario no guarda y pide el nombre (CU1).
+
+Resultado: `npm run typecheck` sin errores; `npm test` 7 archivos, 72 tests pasan (62 de los sprints 0 a 4 y 10 en `pantallasPersonas.test.tsx`: T5.1 a T5.6, más JSON dañado al arrancar (T5.1b), cancelar y fallo al borrar (T5.5) y fecha inválida en el formulario (T5.6b)); `npm run build` genera `dist/`. Código nuevo: `estado/contexto.tsx` (`ProveedorApp`, `reducer`, `useApp`, `ejecutar`), `componentes/BannerError.tsx`, `componentes/CamposDireccion.tsx`, `componentes/FormularioPersona.tsx` y `pantallas/Persona.tsx`; `App.tsx` envuelve las rutas con `ProveedorApp` y un marco con el banner de error. T0.3 espera con `findByRole` a que termine la carga de datos (la comprobación no cambia). Tras crear, la app abre el detalle de la persona nueva. El botón "Añadir casa" y la ruta `/casa/:id` quedan para el Sprint 6.
 
 ---
 

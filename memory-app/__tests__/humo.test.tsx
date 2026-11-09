@@ -8,9 +8,10 @@ describe("Sprint 0: pantalla inicial", () => {
     expect(1 + 1).toBe(2);
   });
 
-  test("T0.3 la app arranca y muestra la pantalla inicial vacía en español", () => {
+  test("T0.3 la app arranca y muestra la pantalla inicial vacía en español", async () => {
+    // Desde el Sprint 5 los datos se cargan al arrancar: se espera a que termine la carga.
     render(<App />);
-    expect(screen.getByRole("heading", { name: "Memory" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Memory" })).toBeInTheDocument();
     expect(screen.getByText("Todavía no hay nada guardado")).toBeInTheDocument();
     expect(document.documentElement.lang === "" || document.documentElement.lang === "es").toBe(true);
   });

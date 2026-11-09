@@ -1,10 +1,35 @@
-import { createHashRouter, RouterProvider, type RouteObject } from "react-router";
+import { createHashRouter, Outlet, RouterProvider, type RouteObject } from "react-router";
+import BannerError from "./componentes/BannerError";
+import { ProveedorApp } from "./estado/contexto";
 import Inicio from "./pantallas/Inicio";
+import Persona from "./pantallas/Persona";
 
-export const rutas: RouteObject[] = [{ path: "/", element: <Inicio /> }];
+/** Marco común: el banner de error va encima de todas las pantallas. */
+function Marco() {
+  return (
+    <>
+      <BannerError />
+      <Outlet />
+    </>
+  );
+}
+
+export const rutas: RouteObject[] = [
+  {
+    element: <Marco />,
+    children: [
+      { path: "/", element: <Inicio /> },
+      { path: "/persona/:id", element: <Persona /> },
+    ],
+  },
+];
 
 const router = createHashRouter(rutas);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ProveedorApp>
+      <RouterProvider router={router} />
+    </ProveedorApp>
+  );
 }
