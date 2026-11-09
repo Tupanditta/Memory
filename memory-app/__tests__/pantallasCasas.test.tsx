@@ -1,6 +1,7 @@
 // Sprint 6: pantallas de casas (T6.1 a T6.6), con el repositorio real sobre un
 // sistema de archivos simulado en memoria. Desde el Sprint 10 (regla 8) Inicio y la
-// ficha de persona tienen la interfaz nueva; lo que se comprueba no cambia.
+// ficha de persona tienen la interfaz nueva, y desde el Sprint 11 el formulario y el
+// detalle de casa; lo que se comprueba no cambia.
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -45,7 +46,14 @@ const esperarTarjetaCasa = (apodo: string, direccion: string, miembros: string) 
   expect(tarjeta).toHaveTextContent(direccion);
   expect(tarjeta).toHaveTextContent(miembros);
 };
-const miembrosEnDetalle = () => within(screen.getByRole("region", { name: "Miembros" })).getAllByRole("link").map((a) => a.textContent);
+const regionMiembros = () => screen.getByRole("region", { name: "¿Quiénes viven aquí?" });
+const miembrosEnDetalle = () => within(regionMiembros()).getAllByRole("link").map((a) => a.getAttribute("aria-label"));
+const regionDireccion = () => screen.getByRole("region", { name: "Dirección compartida" });
+/** Abre la hoja de opciones del detalle de casa y pulsa una opción. */
+async function opcionDeCasa(usuario: ReturnType<typeof userEvent.setup>, opcion: "Editar información" | "Eliminar casa") {
+  await usuario.click(screen.getByRole("button", { name: "Opciones de la casa" }));
+  await usuario.click(within(screen.getByRole("dialog", { name: "Opciones de la casa" })).getByRole("button", { name: opcion }));
+}
 
 const ana = persona("p1", "Ana");
 const bruno = persona("p2", "Bruno");
@@ -55,15 +63,15 @@ describe("Sprint 6: pantallas de casas", () => {
   test("T6.1 crear una casa con personas desde la UI la guarda y la muestra (CU7)", async () => {
     const { usuario, leer, router } = await montar({ personas: [carla, ana, bruno] });
     await usuario.click(screen.getByRole("link", { name: "Añadir casa" }));
-    expect(screen.getByRole("heading", { name: "Nueva casa" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Nueva Casa" })).toBeInTheDocument();
 
     // El selector lista a todas las personas en orden alfabético.
     const selector = screen.getByRole("group", { name: "¿Quiénes viven aquí?" });
-    expect(within(selector).getAllByRole("checkbox").map((c) => c.closest("label")?.textContent)).toEqual(["Ana", "Bruno", "Carla"]);
+    expect(within(selector).getAllByRole("checkbox").map((c) => c.getAttribute("aria-label"))).toEqual(["Ana", "Bruno", "Carla"]);
 
-    await usuario.type(screen.getByLabelText("Apodo"), "Casa de los abuelos");
-    await usuario.type(screen.getByLabelText("Calle"), "Calle Sol");
-    await usuario.type(screen.getByLabelText("Ciudad"), "Toledo");
+    await usuario.type(screen.getByLabelText("Apodo del hogar"), "Casa de los abuelos");
+    await usuario.type(screen.getByLabelText("Calle / Avenida"), "Calle Sol");
+    await usuario.type(screen.getByLabelText("Ciudad / Pueblo"), "Toledo");
     await usuario.click(screen.getByRole("checkbox", { name: "Ana" }));
     await usuario.click(screen.getByRole("checkbox", { name: "Carla" }));
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
@@ -78,7 +86,7 @@ describe("Sprint 6: pantallas de casas", () => {
     });
     expect(router.state.location.pathname).toBe(`/casa/${guardadas[0].id}`);
     expect(miembrosEnDetalle()).toEqual(["Ana", "Carla"]);
-    expect(within(screen.getByRole("region", { name: "Dirección" })).getByText("Toledo")).toBeInTheDocument();
+    expect(within(regionDireccion()).getByText("Toledo")).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Volver" }));
     expect(casasEnLista()).toEqual(["Casa de los abuelos"]);
@@ -88,7 +96,7 @@ describe("Sprint 6: pantallas de casas", () => {
   test("T6.2 el formulario no permite guardar sin personas seleccionadas (R8)", async () => {
     const { usuario, banco, router } = await montar({ personas: [ana], ruta: "/casa/nueva" });
     const antes = banco.archivos();
-    await usuario.type(screen.getByLabelText("Apodo"), "Casa vacía");
+    await usuario.type(screen.getByLabelText("Apodo del hogar"), "Casa vacía");
     const guardar = screen.getByRole("button", { name: "Guardar" });
     expect(guardar).toBeDisabled();
     expect(screen.getByText("Elige al menos una persona")).toBeInTheDocument();
@@ -137,10 +145,11 @@ describe("Sprint 6: pantallas de casas", () => {
     await usuario.type(buscador, "abuelos");
     await usuario.click(within(regionCasas()!).getByRole("link", { name: /Casa de los abuelos/ }));
     expect(await screen.findByRole("heading", { name: "Casa de los abuelos" })).toBeInTheDocument();
-    const direccion = screen.getByRole("region", { name: "Dirección" });
-    for (const texto of ["Calle Sol", "5", "Toledo"]) expect(within(direccion).getByText(texto)).toBeInTheDocument();
+    // La ficha une calle y número en una línea ("Calle Sol 5").
+    const direccion = regionDireccion();
+    for (const texto of ["Calle Sol 5", "Toledo"]) expect(within(direccion).getByText(texto)).toBeInTheDocument();
     expect(miembrosEnDetalle()).toEqual(["Ana", "Bruno"]);
-    expect(screen.getByText("2 miembros")).toBeInTheDocument();
+    expect(within(regionMiembros()).getByText("2 miembros")).toBeInTheDocument();
   });
 
   test("T6.4 una persona en dos casas muestra ambas en su detalle, y cada una abre su casa (RF7)", async () => {
@@ -202,8 +211,8 @@ describe("Sprint 6: pantallas de casas", () => {
 
   test("T6.5c editar la casa cambia apodo y miembros; borrarla pide confirmación (CU8)", async () => {
     const { usuario, leer, router } = await montar({ personas: [ana, bruno], casas: [casa("c1", "Casa", ["p1"])], ruta: "/casa/c1" });
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
-    const apodo = screen.getByLabelText("Apodo");
+    await opcionDeCasa(usuario, "Editar información");
+    const apodo = screen.getByLabelText("Apodo del hogar");
     expect(apodo).toHaveValue("Casa");
     await usuario.clear(apodo);
     await usuario.type(apodo, "Casa nueva");
@@ -214,11 +223,11 @@ describe("Sprint 6: pantallas de casas", () => {
     expect(miembrosEnDetalle()).toEqual(["Ana", "Bruno"]);
     expect(leer("casas.json")).toEqual([casa("c1", "Casa nueva", ["p1", "p2"])]);
 
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
+    await opcionDeCasa(usuario, "Eliminar casa");
     await usuario.click(within(screen.getByRole("alertdialog", { name: "Confirmar borrado" })).getByRole("button", { name: "Cancelar" }));
     expect(leer("casas.json")).toHaveLength(1);
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
-    await usuario.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await opcionDeCasa(usuario, "Eliminar casa");
+    await usuario.click(within(screen.getByRole("alertdialog", { name: "Confirmar borrado" })).getByRole("button", { name: "Eliminar" }));
     expect(router.state.location.pathname).toBe("/");
     expect(leer("casas.json")).toEqual([]);
     expect(leer("personas.json")).toEqual([ana, bruno]);
@@ -227,15 +236,17 @@ describe("Sprint 6: pantallas de casas", () => {
   test("T6.6 si el guardado falla, la casa no aparece en pantalla y se ve el error (RNF9)", async () => {
     const { usuario, banco, leer } = await montar({ personas: [ana] });
     await usuario.click(screen.getByRole("link", { name: "Añadir casa" }));
-    await usuario.type(screen.getByLabelText("Apodo"), "Casa fallida");
+    await usuario.type(screen.getByLabelText("Apodo del hogar"), "Casa fallida");
     await usuario.click(screen.getByRole("checkbox", { name: "Ana" }));
     banco.fallarEscrituraTmp("casas.json");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No se pudieron guardar los cambios");
     expect(leer("casas.json")).toEqual([]);
-    expect(screen.getByLabelText("Apodo")).toHaveValue("Casa fallida");
+    expect(screen.getByLabelText("Apodo del hogar")).toHaveValue("Casa fallida");
+    // Con lo escrito sin guardar, "Cancelar" pide descartar.
     await usuario.click(screen.getByRole("button", { name: "Cancelar" }));
+    await usuario.click(screen.getByRole("button", { name: "Descartar" }));
     expect(regionCasas()).toBeNull();
     expect(screen.queryByText("Casa fallida")).toBeNull();
   });

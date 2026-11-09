@@ -312,21 +312,23 @@ Resultado: `npm run typecheck` sin errores; `npm test` 18 archivos, 189 tests pa
 ---
 
 #### Sprint 11. Casas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Formulario de casa: tarjeta de bienvenida, apodo, selector de personas con contador, "Añadir nueva persona", dirección compartida en forma de píldora, guardar y cancelar.
-- [ ] Detalle de casa (no está en el prototipo, ver design.md): cabecera, dirección y miembros con "Quitar".
-- [ ] "Añadir nueva persona" abre el formulario de persona y, al volver, la persona nueva aparece en la lista sin perder el apodo, la dirección ni la selección.
+- [x] Formulario de casa: tarjeta de bienvenida, apodo, selector de personas con contador, "Añadir nueva persona", dirección compartida en forma de píldora, guardar y cancelar.
+- [x] Detalle de casa (no está en el prototipo, ver design.md): cabecera, dirección y miembros con "Quitar".
+- [x] "Añadir nueva persona" abre el formulario de persona y, al volver, la persona nueva aparece en la lista sin perder el apodo, la dirección ni la selección.
 
 Tests de validación
-- [ ] T11.1 El contador ("0 seleccionados", "1 seleccionado", "N seleccionados") y el estado de cada fila (marcada en `primary`) reflejan la selección; sin ninguna, "Guardar casa" queda desactivado y se lee "Elige al menos una persona" (R8).
-- [ ] T11.2 Crear una casa con apodo, dirección y dos personas la guarda y la muestra en Inicio (CU7).
-- [ ] T11.3 Tras "Añadir nueva persona" y guardarla, vuelve al formulario con la persona en la lista y lo escrito intacto.
-- [ ] T11.4 El detalle de casa muestra dirección y todos los miembros, y cada miembro abre su ficha (CU9, RF6).
-- [ ] T11.5 "Quitar" al último miembro muestra el diálogo; aceptar borra la casa, cancelar la deja igual (RF7b).
-- [ ] T11.6 Si el guardado falla, la casa no aparece y se ve el banner de error (RNF9).
-- [ ] T11.7 Los tests T6.1 a T6.6 siguen pasando (regla 8) y la suite acumulada pasa completa.
+- [x] T11.1 El contador ("0 seleccionados", "1 seleccionado", "N seleccionados") y el estado de cada fila (marcada en `primary`) reflejan la selección; sin ninguna, "Guardar casa" queda desactivado y se lee "Elige al menos una persona" (R8).
+- [x] T11.2 Crear una casa con apodo, dirección y dos personas la guarda y la muestra en Inicio (CU7).
+- [x] T11.3 Tras "Añadir nueva persona" y guardarla, vuelve al formulario con la persona en la lista y lo escrito intacto.
+- [x] T11.4 El detalle de casa muestra dirección y todos los miembros, y cada miembro abre su ficha (CU9, RF6).
+- [x] T11.5 "Quitar" al último miembro muestra el diálogo; aceptar borra la casa, cancelar la deja igual (RF7b).
+- [x] T11.6 Si el guardado falla, la casa no aparece y se ve el banner de error (RNF9).
+- [x] T11.7 Los tests T6.1 a T6.6 siguen pasando (regla 8) y la suite acumulada pasa completa.
+
+Resultado: `npm run typecheck` sin errores; `npm test` 19 archivos, 202 tests pasan (189 de los sprints 0 a 10 y 13 en `casas11.test.tsx`: T11.1 a T11.6, más sin personas en la app (T11.1b), apodo vacío y descartar (T11.2b), cancelar sin cambios (T11.2c), cancelar la persona nueva y borrador de un solo uso (T11.3b), "Añadir nueva persona" durante la edición (T11.3c), detalle sin dirección y hoja de opciones (T11.4b) y fallo al crear (T11.6b)); suite completa ejecutada 4 veces seguidas sin fallos; `npm run build` genera `dist/`. Decisiones del usuario (2026-11-09, anotadas en design.md, "Detalles fijados en el Sprint 11"): tras crear una casa se abre su detalle (T6.1 no cambia); la persona creada con "Añadir nueva persona" vuelve marcada. El icono `done` no existe en `material-symbols` 0.48.3: se usa `check` (tabla de desviaciones). Adaptaciones de tests anteriores (regla 8; la comprobación no cambia): T6.1 a T6.6 usan los nombres nuevos ("Nueva Casa" como `h1`, "Apodo del hogar", "Calle / Avenida", "Ciudad / Pueblo", regiones "Dirección compartida" y "¿Quiénes viven aquí?", el nombre accesible de cada fila y de cada miembro, la hoja "Opciones de la casa" con "Editar información" y "Eliminar casa", confirmar con "Eliminar"); T6.3 busca "Calle Sol 5" en una línea y "2 miembros" dentro de la región de miembros; en T6.6, "Cancelar" con cambios pide descartar. Código nuevo o rehecho: `componentes/FormularioCasa.tsx`, `pantallas/Casa.tsx`, `componentes/TarjetaDireccion.tsx` (también en la ficha de persona), borrador de casa en `ProveedorApp` (`guardarBorradorCasa`, `verBorradorCasa`, `anadirPersonaABorrador`, `descartarBorradorCasa`) y vuelta al formulario de casa en `pantallas/Persona.tsx`. El aspecto se comprueba en la vista previa web y en el móvil (T13.8).
 
 ---
 

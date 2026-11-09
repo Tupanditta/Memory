@@ -1,7 +1,7 @@
 // Estado de la app (design.md, "Estado y pantallas"). Carga los datos al arrancar,
 // crea la `Tienda` y los servicios, y solo actualiza los datos con resultado `ok` (RNF9).
 import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
-import type { Resultado } from "../modelos/tipos";
+import type { Direccion, Resultado } from "../modelos/tipos";
 import type { Almacen } from "../repositorio/almacen";
 import { crearAlmacen, Repositorio, type Datos } from "../repositorio/repositorio";
 import { AjustesService } from "../servicios/ajustesService";
@@ -82,6 +82,18 @@ interface Servicios {
   intercambio: IntercambioService;
 }
 
+/**
+ * Lo escrito en el formulario de casa mientras se crea una persona con "Añadir nueva
+ * persona" (design.md, "Formulario de casa"). Solo vive en memoria: no se guarda.
+ */
+export interface BorradorCasa {
+  /** `"nueva"` o el `id` de la casa que se edita. */
+  casaId: string;
+  apodo: string;
+  direccion: Direccion;
+  personas: string[];
+}
+
 export interface ValorContexto {
   datos: Datos;
   error: string | null;
@@ -104,6 +116,13 @@ export interface ValorContexto {
   limpiarEmergente(): void;
   /** Elige un archivo e importa su contenido; `null` si el usuario cancela. */
   importarDesdeArchivo(): Promise<Resultado<ResumenImportacion> | null>;
+  /** Guarda lo escrito en el formulario de casa antes de ir a crear una persona. */
+  guardarBorradorCasa(borrador: BorradorCasa): void;
+  /** Borrador pendiente, si lo hay (no lo quita). */
+  verBorradorCasa(): BorradorCasa | null;
+  /** Marca a la persona recién creada en el borrador pendiente. */
+  anadirPersonaABorrador(personaId: string): void;
+  descartarBorradorCasa(): void;
 }
 
 /** Lo que toca el sistema; se inyecta en las pruebas. */
@@ -137,6 +156,7 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   const externosElegidos = useRef(externos);
   /** El aviso de permiso denegado se muestra una vez por sesión. */
   const avisoMostrado = useRef(false);
+  const borradorCasa = useRef<BorradorCasa | null>(null);
 
   useEffect(() => {
     let cancelado = false;
@@ -225,6 +245,18 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
     return ejecutar((s) => s.intercambio.importar(contenido));
   }, [ejecutar]);
 
+  const guardarBorradorCasa = useCallback((borrador: BorradorCasa) => {
+    borradorCasa.current = borrador;
+  }, []);
+  const verBorradorCasa = useCallback(() => borradorCasa.current, []);
+  const anadirPersonaABorrador = useCallback((personaId: string) => {
+    const b = borradorCasa.current;
+    if (b && !b.personas.includes(personaId)) borradorCasa.current = { ...b, personas: [...b.personas, personaId] };
+  }, []);
+  const descartarBorradorCasa = useCallback(() => {
+    borradorCasa.current = null;
+  }, []);
+
   if (estado.fase === "cargando") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-surface px-margin">
@@ -257,6 +289,10 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
     mostrarEmergente,
     limpiarEmergente,
     importarDesdeArchivo,
+    guardarBorradorCasa,
+    verBorradorCasa,
+    anadirPersonaABorrador,
+    descartarBorradorCasa,
   };
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }

@@ -13,18 +13,24 @@ import HojaInferior from "../componentes/HojaInferior";
 import Icono from "../componentes/Icono";
 import Pantalla from "../componentes/Pantalla";
 import Tarjeta from "../componentes/Tarjeta";
+import TarjetaDireccion from "../componentes/TarjetaDireccion";
 import { useApp } from "../estado/contexto";
 import type { Persona as TipoPersona } from "../modelos/tipos";
 import type { CasaDePersona } from "../servicios/casasService";
-import { contar, direccionCorta, edad, emojiFecha, fechaLarga, lineasDireccion, nombreFecha, signoZodiacal } from "../utilidades/presentacion";
+import { contar, direccionCorta, edad, emojiFecha, fechaLarga, nombreFecha, signoZodiacal } from "../utilidades/presentacion";
 
 const AVISO_GUARDADA = "Persona guardada con éxito en Memory";
+
+/** Estado de navegación de `/persona/nueva` abierta con "Añadir nueva persona" del formulario de casa. */
+export interface DesdeFormularioCasa {
+  desdeCasa: true;
+}
 
 export default function Persona() {
   const { id = "nueva" } = useParams();
   const navegar = useNavigate();
   const ubicacion = useLocation();
-  const { datos, casas, ejecutar, mostrarEmergente } = useApp();
+  const { datos, casas, ejecutar, mostrarEmergente, anadirPersonaABorrador } = useApp();
   const [editando, setEditando] = useState(false);
   /** Tras borrar con éxito, la navegación a Inicio llega después que los datos: no se pinta "no existe". */
   const saliendo = useRef(false);
@@ -37,7 +43,11 @@ export default function Persona() {
       const r = await ejecutar((s) => s.personas.crear(datosPersona, casasIds));
       if (!r.ok) return false;
       mostrarEmergente(AVISO_GUARDADA, "favorite");
-      navegar(`/persona/${r.valor.id}`, { replace: true });
+      if ((ubicacion.state as DesdeFormularioCasa | null)?.desdeCasa) {
+        // Vuelve al formulario de casa, con lo escrito y la persona nueva marcada.
+        anadirPersonaABorrador(r.valor.id);
+        navegar(-1);
+      } else navegar(`/persona/${r.valor.id}`, { replace: true });
       return true;
     };
     return <FormularioPersona casas={datos.casas} onGuardar={crear} onCancelar={volver} />;
@@ -98,11 +108,9 @@ function Ficha({ persona, susCasas, onEditar, onBorrar }: PropsFicha) {
   const { datos, personas, permiso } = useApp();
   const [opciones, setOpciones] = useState(false);
   const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
-  const ids = { direccion: useId(), fechas: useId(), casas: useId() };
+  const ids = { fechas: useId(), casas: useId() };
   const casasQueSeBorran = personas.casasQueSeBorrarian(persona.id);
   const hoy = new Date();
-  const lineas = lineasDireccion(persona.direccion);
-  const sinDireccion = !lineas.via && !lineas.vivienda && !lineas.localidad;
   const hora = datos.ajustes.horaNotificacion;
 
   return (
@@ -139,30 +147,7 @@ function Ficha({ persona, susCasas, onEditar, onBorrar }: PropsFicha) {
           </div>
 
           <div className="flex flex-col gap-space-lg">
-            <Tarjeta elemento="section" padding={24} aria-labelledby={ids.direccion} className="flex flex-col gap-space-md">
-              <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-container/40 via-primary-fixed to-transparent" />
-              <CabeceraTarjeta id={ids.direccion} icono="pin_drop" colorCirculo="bg-primary-fixed/60 text-primary" sobretitulo="Ubicación principal" titulo="Dirección particular" />
-              <div className="flex flex-col gap-1 rounded bg-surface-container-low p-space-md">
-                {sinDireccion ? (
-                  <span className="text-body-md text-outline">Sin dirección guardada</span>
-                ) : (
-                  <>
-                    {lineas.via && <span className="text-label-lg font-semibold text-on-surface">{lineas.via}</span>}
-                    {lineas.vivienda && <span className="text-body-md text-on-surface-variant">{lineas.vivienda}</span>}
-                    {lineas.localidad && <span className="text-body-sm text-outline">{lineas.localidad}</span>}
-                  </>
-                )}
-              </div>
-              {persona.direccion.notas.trim() && (
-                <div className="flex items-start gap-space-sm rounded bg-surface-container p-space-md">
-                  <Icono nombre="lightbulb" tamano={20} className="mt-0.5 shrink-0 text-secondary" />
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-label-sm font-semibold text-secondary">Nota para visitas</span>
-                    <p className="text-body-sm leading-relaxed text-on-surface-variant">{persona.direccion.notas}</p>
-                  </div>
-                </div>
-              )}
-            </Tarjeta>
+            <TarjetaDireccion direccion={persona.direccion} sobretitulo="Ubicación principal" titulo="Dirección particular" tituloNotas="Nota para visitas" />
 
             <Tarjeta
               elemento="section"
