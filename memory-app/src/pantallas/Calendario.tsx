@@ -45,7 +45,6 @@ export default function Calendario() {
             <span className="text-label-md uppercase tracking-wider text-secondary">Fechas señaladas</span>
           </div>
           <h1 className="text-headline-md text-on-surface">Próximas fechas</h1>
-          <p className="text-body-md text-on-surface-variant">Nunca olvides un momento especial con las personas que amas.</p>
         </div>
 
         {primera ? (

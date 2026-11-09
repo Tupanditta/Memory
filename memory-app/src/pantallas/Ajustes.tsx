@@ -101,19 +101,6 @@ export default function Ajustes() {
               Guardado local
             </span>
           </div>
-          <p className="text-body-md text-on-surface-variant">Personaliza tus recordatorios y gestiona la privacidad de tus recuerdos.</p>
-        </div>
-
-        <div className="relative flex h-36 w-full items-center justify-between overflow-hidden rounded-lg bg-surface-container-low px-space-lg shadow-sm">
-          <div className="relative z-10 flex max-w-[62%] flex-col gap-1">
-            <span className="text-label-md uppercase tracking-wider text-primary">Tranquilidad diaria</span>
-            <p className="text-body-sm leading-relaxed text-on-surface-variant">
-              Tus recuerdos no se apresuran. Configura momentos serenos para conectar con quienes más quieres.
-            </p>
-          </div>
-          <span aria-hidden="true" className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-fixed to-secondary-fixed text-primary shadow-sm">
-            <Icono nombre="local_cafe" tamano={40} />
-          </span>
         </div>
 
         <Tarjeta elemento="section" aria-labelledby="titulo-aviso" padding={24} className="flex flex-col gap-space-md">
@@ -207,13 +194,6 @@ export default function Ajustes() {
         </Tarjeta>
 
         <AvisoEmergente key={avisoCopia?.n} variante="enLinea" icono="check" mensaje={avisoCopia?.texto ?? null} onTerminar={() => setAvisoCopia(null)} />
-
-        <div className="flex items-center gap-space-md rounded-lg bg-surface-container-high/60 p-space-md shadow-sm">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-container-lowest text-secondary">
-            <Icono nombre="favorite" tamano={20} />
-          </span>
-          <p className="text-body-sm italic text-on-surface-variant">"Recordar es volver a pasar por el corazón."</p>
-        </div>
 
         <footer className="flex flex-col items-center gap-1 pb-space-sm pt-space-xs text-center">
           <p className="text-label-sm text-outline">Memory v{version} • Hecho para recordar lo importante</p>
