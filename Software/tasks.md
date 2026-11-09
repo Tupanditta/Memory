@@ -123,26 +123,28 @@ Resultado: `npm run typecheck` sin errores; `npm test` 5 archivos, 50 tests pasa
 ---
 
 #### Sprint 4. Servicio de casas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Crear, editar y borrar casa (CU7, CU8).
-- [ ] Añadir y quitar personas de una casa; una persona puede estar en varias.
-- [ ] Rechazar casas sin personas o con ids inexistentes.
-- [ ] Quitar a la última persona: devolver una señal para pedir confirmación y borrar la casa solo si se confirma (RF7b).
-- [ ] Buscar casa por cualquier dato: apodo, dirección o nombre de un miembro (CU9, RF6).
-- [ ] Obtener las casas de una persona, con dirección y convivientes (RF7).
+- [x] Crear, editar y borrar casa (CU7, CU8).
+- [x] Añadir y quitar personas de una casa; una persona puede estar en varias.
+- [x] Rechazar casas sin personas o con ids inexistentes.
+- [x] Quitar a la última persona: devolver una señal para pedir confirmación y borrar la casa solo si se confirma (RF7b).
+- [x] Buscar casa por cualquier dato: apodo, dirección o nombre de un miembro (CU9, RF6).
+- [x] Obtener las casas de una persona, con dirección y convivientes (RF7).
 
 Tests de validación
-- [ ] T4.1 Crear casa con apodo y dos personas la guarda con los dos ids (RF5, CU7).
-- [ ] T4.2 Crear casa sin personas se rechaza y no escribe (R8, RNF9).
-- [ ] T4.3 Crear casa con un id de persona inexistente se rechaza (RNF10).
-- [ ] T4.4 La misma persona puede estar en dos casas distintas (RF5).
-- [ ] T4.5 Quitar a una persona de una casa con más miembros la deja con el resto.
-- [ ] T4.6 Quitar a la última persona devuelve la señal de confirmación y no modifica nada hasta confirmar (RF7b).
-- [ ] T4.7 Confirmar el borrado elimina la casa; cancelar la mantiene intacta.
-- [ ] T4.8 Buscar `"abuelos"` encuentra `"Casa de los abuelos"`; buscar el nombre de un miembro o la calle de la casa también la encuentra (RF6, CU9).
-- [ ] T4.9 `casasDePersona` devuelve todas sus casas con dirección y convivientes (RF7).
+- [x] T4.1 Crear casa con apodo y dos personas la guarda con los dos ids (RF5, CU7).
+- [x] T4.2 Crear casa sin personas se rechaza y no escribe (R8, RNF9).
+- [x] T4.3 Crear casa con un id de persona inexistente se rechaza (RNF10).
+- [x] T4.4 La misma persona puede estar en dos casas distintas (RF5).
+- [x] T4.5 Quitar a una persona de una casa con más miembros la deja con el resto.
+- [x] T4.6 Quitar a la última persona devuelve la señal de confirmación y no modifica nada hasta confirmar (RF7b).
+- [x] T4.7 Confirmar el borrado elimina la casa; cancelar la mantiene intacta.
+- [x] T4.8 Buscar `"abuelos"` encuentra `"Casa de los abuelos"`; buscar el nombre de un miembro o la calle de la casa también la encuentra (RF6, CU9).
+- [x] T4.9 `casasDePersona` devuelve todas sus casas con dirección y convivientes (RF7).
+
+Resultado: `npm run typecheck` sin errores; `npm test` 6 archivos, 62 tests pasan (50 de los sprints 0 a 3 y 12 en `casas.test.ts`: T4.1 a T4.9, más editar, borrar y fallo de guardado al crear y quitar). Código nuevo: `servicios/casasService.ts`.
 
 ---
 
