@@ -69,3 +69,26 @@ export function diaAvisoAnual({ dia, mes }: DiaMes): DiaMes {
   const diasMesAnterior = mesAnterior === 2 ? 28 : [4, 6, 9, 11].includes(mesAnterior) ? 30 : 31;
   return { dia: diasMesAnterior, mes: mesAnterior };
 }
+
+export interface MesCalendario {
+  /** Mes (1-12) y año de la próxima ocurrencia. */
+  mes: number;
+  anio: number;
+  entradas: EntradaCalendario[];
+}
+
+/**
+ * Agrupa entradas ya ordenadas por el mes y el año de su próxima ocurrencia,
+ * conservando el orden (design.md, "Calendario").
+ */
+export function agruparPorMes(entradas: readonly EntradaCalendario[]): MesCalendario[] {
+  const meses: MesCalendario[] = [];
+  for (const entrada of entradas) {
+    const mes = entrada.proxima.getMonth() + 1;
+    const anio = entrada.proxima.getFullYear();
+    const ultimo = meses[meses.length - 1];
+    if (ultimo && ultimo.mes === mes && ultimo.anio === anio) ultimo.entradas.push(entrada);
+    else meses.push({ mes, anio, entradas: [entrada] });
+  }
+  return meses;
+}

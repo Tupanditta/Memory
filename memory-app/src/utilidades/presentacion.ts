@@ -112,7 +112,11 @@ export function esCercana(fecha: DiaMes, hoy: Date): boolean {
 
 /** "Hoy", "Mañana" o "En N días". */
 export function etiquetaProximaFecha(fecha: DiaMes, hoy: Date): string {
-  const dias = diasHasta(fecha, hoy);
+  return etiquetaDias(diasHasta(fecha, hoy));
+}
+
+/** "Hoy" (0), "Mañana" (1) o "En N días". */
+export function etiquetaDias(dias: number): string {
   if (dias === 0) return "Hoy";
   if (dias === 1) return "Mañana";
   return `En ${dias} días`;
@@ -204,4 +208,27 @@ export function lineasDireccion(direccion: Direccion): { via: string; vivienda: 
       .join(", "),
     localidad: [t(direccion.codigoPostal), t(direccion.ciudad)].filter(Boolean).join(" "),
   };
+}
+
+/** Minutos desde medianoche de una hora `HH:MM` ("09:30" → 570). */
+export function minutosDeHora(hora: string): number {
+  const [h, m] = hora.split(":").map(Number);
+  return h * 60 + m;
+}
+
+/** Hora `HH:MM` de unos minutos desde medianoche (570 → "09:30"). */
+export function horaDeMinutos(minutos: number): string {
+  return `${String(Math.floor(minutos / 60)).padStart(2, "0")}:${String(minutos % 60).padStart(2, "0")}`;
+}
+
+/** Tamaño de un archivo: "<1 KB" por debajo de 1024 bytes; si no, KB redondeados ("24 KB"). */
+export function textoTamano(bytes: number): string {
+  return bytes < 1024 ? "<1 KB" : `${Math.round(bytes / 1024)} KB`;
+}
+
+/** "hoy", "mañana" o "en 4 días" dentro de una frase ("Cumpleaños en 4 días"). */
+export function cuandoEnFrase(dias: number): string {
+  if (dias === 0) return "hoy";
+  if (dias === 1) return "mañana";
+  return `en ${dias} días`;
 }

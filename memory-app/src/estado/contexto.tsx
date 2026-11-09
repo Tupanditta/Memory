@@ -28,7 +28,12 @@ export interface EstadoApp {
   emergente: Emergente | null;
   /** Permiso de notificaciones; `null` mientras no se conoce. */
   permiso: EstadoPermiso | null;
+  /** Última copia de seguridad de la sesión (Ajustes); no se guarda en ningún archivo. */
+  copia: EstadoCopia | null;
 }
+
+/** Línea de estado de la copia de seguridad: tras exportar o tras importar. */
+export type EstadoCopia = { tipo: "exportada"; hora: string; bytes: number } | { tipo: "importada"; resumen: string };
 
 export interface Emergente {
   texto: string;
@@ -44,9 +49,10 @@ export type Accion =
   | { tipo: "aviso"; aviso: string }
   | { tipo: "limpiarAviso" }
   | { tipo: "emergente"; emergente: Emergente | null }
-  | { tipo: "permiso"; permiso: EstadoPermiso };
+  | { tipo: "permiso"; permiso: EstadoPermiso }
+  | { tipo: "copia"; copia: EstadoCopia };
 
-export const estadoInicial: EstadoApp = { fase: "cargando", datos: null, error: null, aviso: null, emergente: null, permiso: null };
+export const estadoInicial: EstadoApp = { fase: "cargando", datos: null, error: null, aviso: null, emergente: null, permiso: null, copia: null };
 
 export function reducer(estado: EstadoApp, accion: Accion): EstadoApp {
   switch (accion.tipo) {
@@ -69,6 +75,8 @@ export function reducer(estado: EstadoApp, accion: Accion): EstadoApp {
       return { ...estado, emergente: accion.emergente };
     case "permiso":
       return { ...estado, permiso: accion.permiso };
+    case "copia":
+      return { ...estado, copia: accion.copia };
   }
 }
 
@@ -101,6 +109,9 @@ export interface ValorContexto {
   emergente: Emergente | null;
   /** Permiso de notificaciones; `null` mientras no se conoce. */
   permiso: EstadoPermiso | null;
+  copia: EstadoCopia | null;
+  /** Anota la última exportación o importación de la sesión. */
+  anotarCopia(copia: EstadoCopia): void;
   personas: PersonasService;
   casas: CasasService;
   ajustes: AjustesService;
@@ -229,6 +240,7 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   const limpiarAviso = useCallback(() => despachar({ tipo: "limpiarAviso" }), []);
   const mostrarEmergente = useCallback((texto: string, icono: NombreIcono) => despachar({ tipo: "emergente", emergente: { texto, icono } }), []);
   const limpiarEmergente = useCallback(() => despachar({ tipo: "emergente", emergente: null }), []);
+  const anotarCopia = useCallback((copia: EstadoCopia) => despachar({ tipo: "copia", copia }), []);
 
   const importarDesdeArchivo = useCallback(async (): Promise<Resultado<ResumenImportacion> | null> => {
     const selector = externosElegidos.current?.selector ?? new SelectorArchivoInput();
@@ -280,6 +292,8 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
     aviso: estado.aviso,
     emergente: estado.emergente,
     permiso: estado.permiso,
+    copia: estado.copia,
+    anotarCopia,
     personas: servicios.current.personas,
     casas: servicios.current.casas,
     ajustes: servicios.current.ajustes,

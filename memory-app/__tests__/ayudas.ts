@@ -1,5 +1,5 @@
 // Pasos de interfaz comunes a las pruebas de pantallas desde el rediseño (Sprint 10).
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import type { UserEvent } from "@testing-library/user-event";
 
 /** Elige el mes de una fecha del formulario en su hoja de meses ("Marzo"). */
@@ -36,3 +36,20 @@ export const tarjetaInicio = (titulo: "Personas" | "Casas y lugares", nombre: st
 
 /** Aviso de notificaciones (`BannerAviso`), distinto del aviso emergente de "guardado". */
 export const avisoNotificaciones = () => screen.queryByRole("status", { name: "Aviso de notificaciones" });
+
+/** Deslizador de la hora de aviso en Ajustes (Sprint 12). */
+export const deslizadorHora = () => screen.getByRole("slider", { name: "Hora de aviso" });
+
+/** Lectura de la hora en Ajustes ("09:00"). */
+export const lecturaHora = () => screen.getByLabelText("Hora elegida");
+
+/**
+ * Arrastra el deslizador hasta una hora (`input` en cada paso) y, si `soltar`,
+ * lo suelta (`change` nativo, que es cuando se guarda).
+ */
+export function moverHora(hora: string, soltar = true) {
+  const [h, m] = hora.split(":").map(Number);
+  const deslizador = deslizadorHora();
+  fireEvent.input(deslizador, { target: { value: String(h * 60 + m) } });
+  if (soltar) fireEvent.change(deslizador);
+}

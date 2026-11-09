@@ -8,7 +8,7 @@ import { rutas } from "../src/App";
 import { AVISO_SIN_PERMISO, ProveedorApp } from "../src/estado/contexto";
 import { direccionVacia, type Fecha, type Persona } from "../src/modelos/tipos";
 import { avisosDe } from "../src/servicios/notificacionesService";
-import { avisoNotificaciones, elegirMes, opcionDePerfil } from "./ayudas";
+import { avisoNotificaciones, deslizadorHora, elegirMes, lecturaHora, moverHora, opcionDePerfil } from "./ayudas";
 import { bancoArchivos, type Banco } from "./simulados/almacenes";
 import { NotificadorSimulado } from "./simulados/notificador";
 
@@ -44,7 +44,9 @@ async function montar({ personas = [], hora = "09:00", ruta = "/", notificador =
   return { banco: b, router, usuario, leer, notificador };
 }
 
-const filasCalendario = () => within(screen.getByRole("list", { name: "Próximas fechas" })).getAllByRole("listitem").map((li) => li.textContent);
+// Desde el Sprint 12 (regla 8) las fechas se agrupan por mes y cada fila muestra insignia
+// (mes y día), nombre, tipo o etiqueta y chip: se leen todas las filas en orden.
+const filasCalendario = () => within(screen.getByRole("region", { name: "Próximas fechas" })).getAllByRole("listitem").map((li) => li.textContent);
 
 afterEach(() => {
   vi.useRealTimers();
@@ -63,22 +65,24 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
       ],
     });
     await usuario.click(screen.getByRole("link", { name: "Calendario" }));
-    expect(screen.getByRole("heading", { name: "Calendario" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Próximas fechas" })).toBeInTheDocument();
     expect(filasCalendario()).toEqual([
-      "CarlaCumpleaños · 10 de marzoHoy",
-      "DaniCumpleaños · 11 de marzoMañana",
-      "AnaCumpleaños · 14 de marzoEn 4 días",
-      "AnaAniversario (Boda) · 5 de eneroEn 301 días",
+      // El nombre del icono (`cake`, `favorite`) es el texto de su ligadura.
+      "Mar10CarlacakeCumpleañosHoy",
+      "Mar11DanicakeCumpleañosMañana",
+      "Mar14AnacakeCumpleañosEn 4 días",
+      "Ene5AnafavoriteBodaEn 301 días",
     ]);
     // Bruno no tiene fechas: no aparece.
     expect(screen.queryByText(/Bruno/)).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "Enero" })).getAllByRole("link")).toHaveLength(1);
     await usuario.click(screen.getByRole("link", { name: /Dani/ }));
     expect(router.state.location.pathname).toBe("/persona/p4");
   });
 
   test("T7.1b sin fechas, el calendario lo indica", async () => {
     await montar({ personas: [persona("p1", "Ana")], ruta: "/calendario" });
-    expect(screen.getByText("Sin fechas guardadas")).toBeInTheDocument();
+    expect(screen.getByText("Aún no hay fechas guardadas")).toBeInTheDocument();
   });
 
   test("T7.2 guardar la primera fecha pide permiso y programa su aviso el día anterior a la hora de ajustes (RF9)", async () => {
@@ -145,16 +149,14 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     const { usuario, leer } = await montar({ personas, notificador });
 
     await usuario.click(screen.getByRole("link", { name: "Ajustes" }));
-    const hora = screen.getByLabelText("Hora de aviso");
-    expect(hora).toHaveValue("09:00");
-    await usuario.clear(hora);
-    await usuario.type(hora, "20:30");
-    await usuario.click(screen.getByRole("button", { name: "Guardar" }));
+    // Desde el Sprint 12 (regla 8) la hora se elige con el deslizador y se guarda al soltarlo.
+    expect(deslizadorHora()).toHaveAttribute("aria-valuetext", "09:00");
+    moverHora("20:30");
 
     await waitFor(() => expect(notificador.programadas.every((a) => a.hora === 20 && a.minuto === 30)).toBe(true));
     expect(notificador.programadas).toEqual(avisosDe(personas, "20:30"));
     expect(leer("ajustes.json")).toEqual({ horaNotificacion: "20:30" });
-    expect(screen.getByText(/el día anterior a las 20:30/)).toBeInTheDocument();
+    expect(lecturaHora()).toHaveTextContent("20:30");
   });
 
   test("T7.6 si se deniega el permiso, la app sigue funcionando y avisa al usuario una vez", async () => {
@@ -191,33 +193,27 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
   });
 
   test("T7.7 la hora de ajustes se guarda en ajustes.json y se conserva al reabrir (RNF7)", async () => {
-    const { usuario, banco, leer } = await montar({ ruta: "/ajustes" });
-    const hora = screen.getByLabelText("Hora de aviso");
-    await usuario.clear(hora);
-    await usuario.type(hora, "07:30");
-    await usuario.click(screen.getByRole("button", { name: "Guardar" }));
+    const { banco, leer } = await montar({ ruta: "/ajustes" });
+    moverHora("07:30");
     await waitFor(() => expect(leer("ajustes.json")).toEqual({ horaNotificacion: "07:30" }));
 
     cleanup();
     await montar({ banco, ruta: "/ajustes" });
-    expect(screen.getByLabelText("Hora de aviso")).toHaveValue("07:30");
-    expect(screen.getByText(/el día anterior a las 07:30/)).toBeInTheDocument();
+    expect(deslizadorHora()).toHaveAttribute("aria-valuetext", "07:30");
+    expect(lecturaHora()).toHaveTextContent("07:30");
   });
 
   test("T7.7b si guardar la hora falla, se conserva la anterior, se ve el error y no se reprograma (RNF9)", async () => {
     const personas = [persona("p1", "Ana", [cumple(14, 3)])];
     const notificador = new NotificadorSimulado();
-    const { usuario, banco, leer } = await montar({ personas, notificador, ruta: "/ajustes" });
+    const { banco, leer } = await montar({ personas, notificador, ruta: "/ajustes" });
     banco.fallarConfirmar("ajustes.json");
-    const hora = screen.getByLabelText("Hora de aviso");
-    await usuario.clear(hora);
-    await usuario.type(hora, "10:00");
-    await usuario.click(screen.getByRole("button", { name: "Guardar" }));
+    moverHora("10:00");
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(leer("ajustes.json")).toEqual({ horaNotificacion: "09:00" });
-    expect(screen.getByLabelText("Hora de aviso")).toHaveValue("09:00");
-    expect(screen.getByText(/el día anterior a las 09:00/)).toBeInTheDocument();
+    await waitFor(() => expect(deslizadorHora()).toHaveAttribute("aria-valuetext", "09:00"));
+    expect(lecturaHora()).toHaveTextContent("09:00");
     expect(notificador.programaciones).toBe(0);
   });
 

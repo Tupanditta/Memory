@@ -333,24 +333,26 @@ Resultado: `npm run typecheck` sin errores; `npm test` 19 archivos, 202 tests pa
 ---
 
 #### Sprint 12. Calendario y ajustes
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Calendario según design.md: encabezado, tarjeta "Próximo aviso", meses con recuento, filas de fecha, tarjeta final, estado vacío. Usa `entradasCalendario`.
-- [ ] Ajustes: tarjeta atmosférica, aviso de fechas (lectura, chips 08:00/09:00/10:30/20:00, deslizador de 06:00 a 22:00 en pasos de 30), copia de seguridad (exportar, importar), cita y pie con la versión de `package.json`.
-- [ ] Resultado efímero de exportar e importar (no se guarda) y `AvisoEmergente`.
+- [x] Calendario según design.md: encabezado, tarjeta "Próximo aviso", meses con recuento, filas de fecha, tarjeta final, estado vacío. Usa `entradasCalendario`.
+- [x] Ajustes: tarjeta atmosférica, aviso de fechas (lectura, chips 08:00/09:00/10:30/20:00, deslizador de 06:00 a 22:00 en pasos de 30), copia de seguridad (exportar, importar), cita y pie con la versión de `package.json`.
+- [x] Resultado efímero de exportar e importar (no se guarda) y `AvisoEmergente`.
 
 Tests de validación
-- [ ] T12.1 "Próximo aviso" muestra la primera fecha: nombre, "Cumpleaños en 4 días • Sábado, 14 de Marzo" y "09:00 h el día anterior (13 Mar)" con la hora de ajustes (RF8, RF9).
-- [ ] T12.2 Las fechas se agrupan por mes de la próxima ocurrencia con "1 momento" / "N momentos", ordenadas por próxima fecha (RF8).
-- [ ] T12.3 Cada fila muestra insignia de mes y día, tipo o etiqueta, edad si hay año, y chip con "En N días", "Hoy" o "Mañana"; el color distingue cumpleaños y aniversario (R5).
-- [ ] T12.4 Sin fechas se muestra "Aún no hay fechas guardadas" y no hay tarjeta de próximo aviso.
-- [ ] T12.5 El deslizador cubre 06:00–22:00 en pasos de 30; moverlo cambia la lectura al instante y guarda una sola vez al soltar (CU10, RNF7).
-- [ ] T12.6 Pulsar un chip de hora la guarda, mueve el deslizador y reprograma las notificaciones (RF10, T7.5).
-- [ ] T12.7 Con una hora guardada que no es múltiplo de 30 (p. ej. 09:15), la lectura muestra 09:15 y no se guarda nada al abrir la pantalla.
-- [ ] T12.8 Antes de exportar o importar no hay línea de estado. Tras exportar se lee "Realizada hoy a las HH:MM" con el tamaño del archivo ("24 KB" o "<1 KB") y el aviso "Copia exportada en formato JSON"; tras importar, el resumen "Personas: N añadidas, M omitidas. Casas: …" y "Datos importados correctamente" (CU11, CU12). Nada de esto se escribe en los JSON y desaparece al reiniciar la app.
-- [ ] T12.9 Si exportar o importar falla, se ve el banner de error y los datos no cambian (RNF9, RNF8).
-- [ ] T12.10 Los tests T7.1 a T7.7 y T8.1 a T8.10 siguen pasando (regla 8) y la suite acumulada pasa completa.
+- [x] T12.1 "Próximo aviso" muestra la primera fecha: nombre, "Cumpleaños en 4 días • Sábado, 14 de Marzo" y "09:00 h el día anterior (13 Mar)" con la hora de ajustes (RF8, RF9).
+- [x] T12.2 Las fechas se agrupan por mes de la próxima ocurrencia con "1 momento" / "N momentos", ordenadas por próxima fecha (RF8).
+- [x] T12.3 Cada fila muestra insignia de mes y día, tipo o etiqueta, edad si hay año, y chip con "En N días", "Hoy" o "Mañana"; el color distingue cumpleaños y aniversario (R5).
+- [x] T12.4 Sin fechas se muestra "Aún no hay fechas guardadas" y no hay tarjeta de próximo aviso.
+- [x] T12.5 El deslizador cubre 06:00–22:00 en pasos de 30; moverlo cambia la lectura al instante y guarda una sola vez al soltar (CU10, RNF7).
+- [x] T12.6 Pulsar un chip de hora la guarda, mueve el deslizador y reprograma las notificaciones (RF10, T7.5).
+- [x] T12.7 Con una hora guardada que no es múltiplo de 30 (p. ej. 09:15), la lectura muestra 09:15 y no se guarda nada al abrir la pantalla.
+- [x] T12.8 Antes de exportar o importar no hay línea de estado. Tras exportar se lee "Realizada hoy a las HH:MM" con el tamaño del archivo ("24 KB" o "<1 KB") y el aviso "Copia exportada en formato JSON"; tras importar, el resumen "Personas: N añadidas, M omitidas. Casas: …" y "Datos importados correctamente" (CU11, CU12). Nada de esto se escribe en los JSON y desaparece al reiniciar la app.
+- [x] T12.9 Si exportar o importar falla, se ve el banner de error y los datos no cambian (RNF9, RNF8).
+- [x] T12.10 Los tests T7.1 a T7.7 y T8.1 a T8.10 siguen pasando (regla 8) y la suite acumulada pasa completa.
+
+Resultado: `npm run typecheck` sin errores; `npm test` 20 archivos, 217 tests pasan (202 de los sprints 0 a 11 y 15 en `calendarioAjustes12.test.tsx`: T12.1 a T12.9, más hoy/mañana, otra hora y aniversario con etiqueta en "Próximo aviso" (T12.1b), día de aviso nunca 29/02 (T12.1c), utilidades de la hora (T12.7b), tamaño en KB de un archivo grande (T12.8b), importar desde la pantalla (T12.8c) y pie con la versión de `package.json`); suite completa ejecutada 5 veces seguidas sin fallos; `npm run build` genera `dist/`. Se comprobó que T12.5 falla si se guarda en cada paso del deslizador. La primera ejecución en frío dio 3 fallos por tiempo (5 s por defecto) en T5.2, T6.1 y T11.1, que tardan 2–3 s en caliente (ya pasó una vez en la comprobación inicial, antes de tocar nada): `testTimeout` sube a 20 s en `vite.config.ts`; ninguna comprobación cambia. Criterios fijados sin preguntar (anotados en design.md, "Detalles fijados en el Sprint 12"; se pueden cambiar): un mes que sale dos veces lleva el año en el segundo ("Marzo 2027"); la edad de la fila son los años que se cumplen en esa fecha; el día de aviso de "Próximo aviso" es el que se programa (`diaAvisoAnual`); la línea de estado de la copia dura toda la sesión (no solo mientras la pantalla está abierta). Adaptaciones de tests anteriores (regla 8; la comprobación no cambia): T7.1 busca el `h1` "Próximas fechas" y lee las filas de la región "Próximas fechas" con el texto nuevo (insignia, nombre, icono, tipo o etiqueta y chip), en el mismo orden; T7.1b busca "Aún no hay fechas guardadas"; T7.5, T7.7 y T7.7b eligen la hora con el deslizador "Hora de aviso" (arrastrar y soltar, ayuda `moverHora` en `__tests__/ayudas.ts`) en lugar del campo de hora y "Guardar", y comprueban la lectura de la hora en lugar de la frase "el día anterior a las HH:MM"; las pruebas del Sprint 8 esperan el `h1` "Ajustes y Datos". Código nuevo o rehecho: `pantallas/Calendario.tsx`, `pantallas/Ajustes.tsx`, `agruparPorMes` en `utilidades/calendario.ts`, utilidades de hora y tamaño en `utilidades/presentacion.ts`, `contenidoExportacion` y `bytesExportacion` en `servicios/intercambioService.ts`, y `copia`/`anotarCopia` en `ProveedorApp`. El aspecto se comprueba en la vista previa web y en el móvil (T13.8).
 
 ---
 

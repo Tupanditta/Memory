@@ -47,7 +47,8 @@ async function montar({ personas = [] as Persona[], casas = [] as Casa[] } = {})
       <RouterProvider router={router} />
     </ProveedorApp>,
   );
-  await screen.findByRole("heading", { name: "Ajustes" });
+  // Desde el Sprint 12 (regla 8) el título es "Ajustes y Datos".
+  await screen.findByRole("heading", { name: "Ajustes y Datos" });
   const leer = (nombre: string) => JSON.parse(banco.archivos()[nombre]);
   return { banco, usuario, leer, compartidor, selector, notificador };
 }

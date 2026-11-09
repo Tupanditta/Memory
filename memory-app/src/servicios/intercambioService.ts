@@ -32,6 +32,16 @@ const limpiarFecha = (f: Fecha): Fecha => ({ tipo: f.tipo, etiqueta: f.etiqueta,
 const limpiarPersona = (p: Persona): Persona => ({ id: p.id, nombre: p.nombre, apodo: p.apodo, direccion: limpiarDireccion(p.direccion), fechas: p.fechas.map(limpiarFecha) });
 const limpiarCasa = (c: Casa): Casa => ({ id: c.id, apodo: c.apodo, direccion: limpiarDireccion(c.direccion), personas: [...c.personas] });
 
+/** Texto del archivo `memory-export.json` (el que se comparte). */
+export function contenidoExportacion(exportacion: Exportacion): string {
+  return JSON.stringify(exportacion, null, 2);
+}
+
+/** Tamaño en bytes (UTF-8) del archivo exportado. */
+export function bytesExportacion(exportacion: Exportacion): number {
+  return new TextEncoder().encode(contenidoExportacion(exportacion)).length;
+}
+
 /** Texto del resumen (CU12). */
 export function textoResumen(r: ResumenImportacion): string {
   return `Personas: ${r.personasAnadidas} añadidas, ${r.personasOmitidas} omitidas. Casas: ${r.casasAnadidas} añadidas, ${r.casasOmitidas} omitidas.`;
@@ -78,7 +88,7 @@ export class IntercambioService {
   async exportar(): Promise<Resultado<Exportacion>> {
     const exportacion = this.generar();
     try {
-      await this.compartidor.compartir(NOMBRE_EXPORTACION, JSON.stringify(exportacion, null, 2));
+      await this.compartidor.compartir(NOMBRE_EXPORTACION, contenidoExportacion(exportacion));
     } catch {
       return fallo("No se pudo crear el archivo de exportación");
     }
