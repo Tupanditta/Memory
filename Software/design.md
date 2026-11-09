@@ -140,7 +140,7 @@ Rutas: `/` Inicio, `/calendario`, `/ajustes`, `/persona/:id` y `/casa/:id` (`id 
 
 #### Servicios
 
-- `Tienda` (`servicios/tienda.ts`) guarda el estado en memoria. `aplicar(cambios)` llama a `Repositorio.guardar` y solo si devuelve `ok` actualiza el estado (RNF9). Los servicios reciben la `Tienda`, calculan el nuevo estado sin mutar el actual y devuelven `Resultado` (`ok`/`error`).
+- `Tienda` (`servicios/tienda.ts`) guarda el estado en memoria (`datos`). `aplicar(cambios)` llama a `Repositorio.guardar` y solo si devuelve `ok` actualiza el estado y devuelve `Resultado<Datos>` con el estado nuevo (RNF9). Los nombres y apodos se guardan sin espacios al principio ni al final; `editar` mezcla la dirección parcial con la actual. Las fechas se editan y borran por su índice en `fechas`. Los servicios reciben la `Tienda`, calculan el nuevo estado sin mutar el actual y devuelven `Resultado` (`ok`/`error`).
 - `PersonasService`: `crear(datos, casasIds?)` (si recibe casas, añade la persona a ellas en el mismo `guardar`; formulario "Asignar a una casa"), `editar`, `borrar` (quita a la persona de sus casas y borra las que queden vacías, en un solo `guardar`), `casasQueSeBorrarian` (para avisar antes de borrar), `anadirFecha`, `editarFecha`, `borrarFecha`, `buscar`.
 - `CasasService`: `crear`, `editar`, `borrar`, `anadirPersona`, `quitarPersona(id, personaId, confirmado)` (si es la última devuelve `requiere-confirmacion` sin cambiar nada; con `confirmado` borra la casa), `buscar`, `casasDePersona`, `miembros`. Una casa se rechaza si no tiene personas o alguna no existe.
 
@@ -407,6 +407,7 @@ Textos que el prototipo no tiene y añade la app (estados vacíos, errores, conf
 - Se normaliza con `String.normalize("NFD")` quitando diacríticos y pasando a minúsculas (RNF3).
 - Busca en todos los datos (RF4): de cada persona, nombre, apodo, todos los campos de dirección, notas, y tipo/etiqueta de sus fechas; de cada casa, apodo, dirección y nombres de sus miembros. Una persona también aparece si coincide el apodo o la dirección de una de sus casas (no los nombres de sus convivientes; para eso se busca la casa). Consulta vacía: devuelve todo.
 - Construye para cada registro un texto único con todos esos campos normalizados y busca la consulta en él. Varias palabras en la consulta deben coincidir todas (en cualquier orden).
+- Código: `utilidades/busqueda.ts` (`textoPersona`, `textoCasa`, `palabrasConsulta`, `coincide`); lo usan `PersonasService.buscar` y `CasasService.buscar`.
 
 #### Exportar e importar
 

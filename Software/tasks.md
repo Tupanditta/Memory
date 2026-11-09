@@ -96,27 +96,29 @@ Resultado: `npm run typecheck` sin errores; `npm test` 4 archivos, 38 tests pasa
 ---
 
 #### Sprint 3. Servicio de personas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Crear, editar y borrar persona (CU1, CU2).
-- [ ] Añadir, editar y borrar fechas de una persona (CU4).
-- [ ] Borrar persona: quitarla de sus casas; si alguna queda vacía, se borra (junto en una sola operación).
-- [ ] Buscar por cualquier dato (CU3, RF4): nombre, apodo, dirección, notas, fechas, y apodo, dirección y miembros de sus casas.
-- [ ] Todas las operaciones validan antes de guardar y devuelven resultado `ok` o `error`.
+- [x] Crear, editar y borrar persona (CU1, CU2).
+- [x] Añadir, editar y borrar fechas de una persona (CU4).
+- [x] Borrar persona: quitarla de sus casas; si alguna queda vacía, se borra (junto en una sola operación).
+- [x] Buscar por cualquier dato (CU3, RF4): nombre, apodo, dirección, notas, fechas, y apodo, dirección y miembros de sus casas.
+- [x] Todas las operaciones validan antes de guardar y devuelven resultado `ok` o `error`.
 
 Tests de validación
-- [ ] T3.1 Crear persona con solo nombre la guarda con un id único (CU1).
-- [ ] T3.2 Crear persona inválida no escribe en el JSON (RNF9).
-- [ ] T3.3 Editar cambia solo los campos indicados y se persiste (CU2).
-- [ ] T3.4 Añadir una fecha válida se guarda en la persona; una inválida se rechaza (CU4).
-- [ ] T3.5 Borrar una persona que está en dos casas la quita de ambas, en una sola operación (RNF8).
-- [ ] T3.6 Borrar la única persona de una casa borra también la casa (RF7b).
-- [ ] T3.7 Si el guardado falla, el servicio devuelve error y el estado no cambia (RNF9).
-- [ ] T3.8 Buscar `"jose"` encuentra `"José"` y `"JOSÉ"`; sin coincidencias devuelve lista vacía (RF4, RNF3).
-- [ ] T3.9 Buscar por calle, portal, ciudad, notas o etiqueta de fecha encuentra a la persona (RF4).
-- [ ] T3.10 Buscar por el apodo o la dirección de una casa encuentra a sus miembros (RF4).
-- [ ] T3.11 Con varias palabras (`"maria calle mayor"`), solo salen resultados que cumplen todas, en cualquier orden.
+- [x] T3.1 Crear persona con solo nombre la guarda con un id único (CU1).
+- [x] T3.2 Crear persona inválida no escribe en el JSON (RNF9).
+- [x] T3.3 Editar cambia solo los campos indicados y se persiste (CU2).
+- [x] T3.4 Añadir una fecha válida se guarda en la persona; una inválida se rechaza (CU4).
+- [x] T3.5 Borrar una persona que está en dos casas la quita de ambas, en una sola operación (RNF8).
+- [x] T3.6 Borrar la única persona de una casa borra también la casa (RF7b).
+- [x] T3.7 Si el guardado falla, el servicio devuelve error y el estado no cambia (RNF9).
+- [x] T3.8 Buscar `"jose"` encuentra `"José"` y `"JOSÉ"`; sin coincidencias devuelve lista vacía (RF4, RNF3).
+- [x] T3.9 Buscar por calle, portal, ciudad, notas o etiqueta de fecha encuentra a la persona (RF4).
+- [x] T3.10 Buscar por el apodo o la dirección de una casa encuentra a sus miembros (RF4).
+- [x] T3.11 Con varias palabras (`"maria calle mayor"`), solo salen resultados que cumplen todas, en cualquier orden.
+
+Resultado: `npm run typecheck` sin errores; `npm test` 5 archivos, 50 tests pasan (38 de los sprints 0 a 2 y 12 en `personas.test.ts`: T3.1 a T3.11, con T3.5 en dos casos: borrado en un solo `guardar` y fallo del segundo archivo sin cambios). Código nuevo: `servicios/tienda.ts`, `servicios/personasService.ts`, `utilidades/busqueda.ts` y `utilidades/id.ts`. `crear` con `casasIds` queda para el Sprint 10.
 
 ---
 
