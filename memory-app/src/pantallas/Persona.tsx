@@ -1,6 +1,6 @@
 // Persona (CU1 a CU4): `id = "nueva"` crea; otro `id` muestra el detalle (RF7)
 // con "Editar" y "Borrar" (con confirmación y aviso de las casas que se borrarían).
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { ETIQUETAS_DIRECCION, textoDireccion } from "../componentes/CamposDireccion";
 import FormularioPersona, { ETIQUETA_TIPO, type ValoresPersona } from "../componentes/FormularioPersona";
@@ -20,6 +20,8 @@ export default function Persona() {
   const { datos, personas, casas, ejecutar } = useApp();
   const [editando, setEditando] = useState(false);
   const [confirmandoBorrado, setConfirmandoBorrado] = useState(false);
+  /** Tras borrar con éxito, la navegación a Inicio llega después que los datos: no se pinta "no existe". */
+  const saliendo = useRef(false);
 
   const volver = () => navegar("/");
 
@@ -39,6 +41,7 @@ export default function Persona() {
 
   const persona = datos.personas.find((p) => p.id === id);
   if (!persona) {
+    if (saliendo.current) return null;
     return (
       <main className="flex min-h-screen flex-col gap-space-md bg-surface px-margin py-space-lg">
         <p className="text-body-md text-on-surface-variant">Esta persona no existe</p>
@@ -68,7 +71,9 @@ export default function Persona() {
   const camposDireccion = CAMPOS_DIRECCION.filter((campo) => persona.direccion[campo] !== "");
 
   const borrar = async () => {
+    saliendo.current = true;
     const r = await ejecutar((s) => s.personas.borrar(persona.id));
+    saliendo.current = r.ok;
     setConfirmandoBorrado(false);
     if (r.ok) volver();
   };
@@ -120,7 +125,9 @@ export default function Persona() {
           <ul className="flex flex-col gap-space-sm">
             {susCasas.map(({ casa, convivientes }) => (
               <li key={casa.id} className="rounded bg-surface-container-lowest p-space-md text-body-md shadow-sm">
-                <p className="text-label-lg text-on-surface">{casa.apodo}</p>
+                <Link to={`/casa/${casa.id}`} className="text-label-lg text-on-surface">
+                  {casa.apodo}
+                </Link>
                 {textoDireccion(casa.direccion) && <p className="text-on-surface-variant">{textoDireccion(casa.direccion)}</p>}
                 <p className="text-on-surface-variant">
                   {convivientes.length === 0 ? "Vive sola en esta casa" : `Con: ${convivientes.map((p) => p.nombre).join(", ")}`}

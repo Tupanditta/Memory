@@ -202,6 +202,8 @@ describe("Sprint 5: estado y pantallas de personas", () => {
     await usuario.click(screen.getByRole("button", { name: "Borrar" }));
     await usuario.click(screen.getByRole("button", { name: "Confirmar borrado" }));
     expect(router.state.location.pathname).toBe("/");
+    // React Router pinta la navegación en una transición: se espera a que aparezca Inicio.
+    await screen.findByRole("region", { name: "Personas" });
     expect(nombresEnLista()).toEqual(["Bruno"]);
     expect(leer("personas.json")).toEqual([persona("p2", "Bruno")]);
     expect(leer("casas.json")).toEqual([casa("c2", "Casa compartida", ["p2"])]);

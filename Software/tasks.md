@@ -172,21 +172,23 @@ Resultado: `npm run typecheck` sin errores; `npm test` 7 archivos, 72 tests pasa
 ---
 
 #### Sprint 6. Pantallas de casas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Formulario de casa con selector de personas (varias).
-- [ ] Detalle de casa con dirección y miembros.
-- [ ] Persona muestra todas sus casas.
-- [ ] Diálogo de confirmación al quitar al último miembro.
+- [x] Formulario de casa con selector de personas (varias).
+- [x] Detalle de casa con dirección y miembros.
+- [x] Persona muestra todas sus casas.
+- [x] Diálogo de confirmación al quitar al último miembro.
 
 Tests de validación
-- [ ] T6.1 Crear una casa con personas desde la UI la guarda y la muestra (CU7).
-- [ ] T6.2 El formulario no permite guardar sin personas seleccionadas (R8).
-- [ ] T6.3 Buscar una casa por cualquiera de sus datos muestra dirección y todas las personas (CU9).
-- [ ] T6.4 Una persona en dos casas muestra ambas en su detalle (RF7).
-- [ ] T6.5 Quitar al último miembro muestra el diálogo; aceptar borra la casa, cancelar la deja igual (RF7b).
-- [ ] T6.6 Si el guardado falla, la casa no aparece en pantalla (RNF9).
+- [x] T6.1 Crear una casa con personas desde la UI la guarda y la muestra (CU7).
+- [x] T6.2 El formulario no permite guardar sin personas seleccionadas (R8).
+- [x] T6.3 Buscar una casa por cualquiera de sus datos muestra dirección y todas las personas (CU9).
+- [x] T6.4 Una persona en dos casas muestra ambas en su detalle (RF7).
+- [x] T6.5 Quitar al último miembro muestra el diálogo; aceptar borra la casa, cancelar la deja igual (RF7b).
+- [x] T6.6 Si el guardado falla, la casa no aparece en pantalla (RNF9).
+
+Resultado: `npm run typecheck` sin errores; `npm test` 8 archivos, 82 tests pasan (72 de los sprints 0 a 5 y 10 en `pantallasCasas.test.tsx`: T6.1 a T6.6, más apodo vacío (T6.2b), quitar un miembro sin ser el último (T6.5b), editar y borrar casa (T6.5c) y fallo al borrar la casa desde el diálogo (T6.6b)); suite completa ejecutada 6 veces seguidas sin fallos; `npm run build` genera `dist/`. Código nuevo: `componentes/FormularioCasa.tsx` y `pantallas/Casa.tsx`; ruta `/casa/:id` en `App.tsx`; Inicio tiene "Añadir casa" y cada casa abre su detalle; en el detalle de persona cada casa abre su detalle. React Router pinta la navegación dentro de una transición, así que tras borrar la pantalla de detalle no muestra "no existe" mientras llega Inicio (no pinta nada), y T5.5 y T6.5 esperan con `findByRole` a que aparezca Inicio antes de comprobar la lista (la comprobación no cambia; antes T5.5 fallaba de forma intermitente al ejecutar toda la suite).
 
 ---
 

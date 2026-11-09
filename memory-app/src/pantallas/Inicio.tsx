@@ -34,6 +34,9 @@ export default function Inicio() {
         <Link to="/persona/nueva" aria-label="Añadir persona" className="rounded-full bg-primary-fixed px-space-md py-space-sm text-label-lg text-on-primary-fixed">
           Persona
         </Link>
+        <Link to="/casa/nueva" aria-label="Añadir casa" className="rounded-full bg-secondary-fixed px-space-md py-space-sm text-label-lg text-on-secondary-fixed">
+          Casa
+        </Link>
       </div>
 
       {vacia && consulta.trim() === "" ? (
@@ -67,8 +70,10 @@ export default function Inicio() {
           <ul className="flex flex-col gap-space-sm">
             {casas.map((c) => (
               <li key={c.id} className="flex flex-col rounded bg-surface-container-lowest p-space-md shadow-sm">
-                <span className="text-label-lg text-on-surface">{c.apodo}</span>
-                {textoDireccion(c.direccion) && <span className="text-body-sm text-on-surface-variant">{textoDireccion(c.direccion)}</span>}
+                <Link to={`/casa/${c.id}`} className="flex flex-col">
+                  <span className="text-label-lg text-on-surface">{c.apodo}</span>
+                  {textoDireccion(c.direccion) && <span className="text-body-sm text-on-surface-variant">{textoDireccion(c.direccion)}</span>}
+                </Link>
                 <span className="text-body-sm text-on-surface-variant">{c.personas.map(nombre).join(", ")}</span>
               </li>
             ))}

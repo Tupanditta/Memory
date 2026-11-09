@@ -2,6 +2,7 @@ import { createHashRouter, Outlet, RouterProvider, type RouteObject } from "reac
 import BannerError from "./componentes/BannerError";
 import { ProveedorApp } from "./estado/contexto";
 import Inicio from "./pantallas/Inicio";
+import Casa from "./pantallas/Casa";
 import Persona from "./pantallas/Persona";
 
 /** Marco común: el banner de error va encima de todas las pantallas. */
@@ -20,6 +21,7 @@ export const rutas: RouteObject[] = [
     children: [
       { path: "/", element: <Inicio /> },
       { path: "/persona/:id", element: <Persona /> },
+      { path: "/casa/:id", element: <Casa /> },
     ],
   },
 ];
