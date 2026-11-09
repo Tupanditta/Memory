@@ -357,24 +357,26 @@ Resultado: `npm run typecheck` sin errores; `npm test` 20 archivos, 217 tests pa
 ---
 
 #### Sprint 13. Cierre
-Estado: pendiente (las pruebas manuales en dispositivo, T13.3 a T13.8, las hace el usuario cuando terminen los sprints 9 a 12)
+Estado: en curso (parte automática hecha; faltan las pruebas manuales del usuario: T13.3 a T13.5, instalación de T13.6, T13.7 y T13.8)
 
 Tareas
-- [ ] Revisar que cada requisito, restricción y caso de uso está cubierto por al menos un test (tabla de trazabilidad abajo, ampliada con los sprints 9 a 12). Hecho una vez antes del rediseño; hay que repetirlo.
+- [x] Revisar que cada requisito, restricción y caso de uso está cubierto por al menos un test (tabla de trazabilidad abajo, ampliada con los sprints 9 a 12). Hecho una vez antes del rediseño; repetido en este sprint.
 - [ ] Prueba manual en dispositivo o emulador de los casos de uso CU1 a CU12.
 - [ ] Comparar cada pantalla con su captura de [prototipo/](prototipo/) (ver T13.8).
-- [ ] Reconciliar [Software/](.) con el código final (design.md con versiones y desviaciones, README y JSON de ejemplo; los JSON de ejemplo se validan en `cierre.test.ts`).
+- [x] Reconciliar [Software/](.) con el código final (design.md con versiones y desviaciones, README y JSON de ejemplo; los JSON de ejemplo se validan en `cierre.test.ts`).
 - [x] Completar el README con instrucciones de instalación y ejecución.
 
 Tests de validación
-- [ ] T13.1 `npm run typecheck` y `npm test` pasan completos (anotar aquí el resultado).
-- [ ] T13.2 Tabla de trazabilidad en este archivo: cada RF, RNF y R figura con al menos un test que pasa (abajo).
+- [x] T13.1 `npm run typecheck` y `npm test` pasan completos (anotar aquí el resultado).
+- [x] T13.2 Tabla de trazabilidad en este archivo: cada RF, RNF y R figura con al menos un test que pasa (abajo).
 - [ ] T13.3 Recorrido manual de CU1 a CU12 sin errores, anotado en este archivo. Pendiente del usuario.
 - [ ] T13.4 Con la app cerrada, una notificación de prueba programada llega (RNF5). Pendiente del usuario, en móvil.
 - [ ] T13.5 Sin conexión de red, todas las funciones siguen operativas (RNF2), incluida la carga de la fuente. Pendiente del usuario (los tests de `cierre.test.ts` comprueban que el código no usa red).
-- [ ] T13.6 Android Studio (o `gradlew assembleDebug` tras `npm run sync`) compila e instala la app en el emulador o en el móvil sin errores.
+- [ ] T13.6 Android Studio (o `gradlew assembleDebug` tras `npm run sync`) compila e instala la app en el emulador o en el móvil sin errores. Compilación hecha (`BUILD SUCCESSFUL`, `app-debug.apk`); la instalación queda pendiente del usuario (no había móvil ni emulador conectado).
 - [ ] T13.7 La app queda instalada y funcional en un móvil real con Android 7.0 o superior (RNF11); lo comprueba el usuario.
 - [ ] T13.8 Las seis pantallas (Inicio, Calendario, Detalle de persona, Formulario de persona, Formulario de casa, Ajustes) se parecen a sus capturas de `prototipo/` en estructura, colores, tipografía y espacios; las diferencias están en la tabla de desviaciones de design.md. Lo comprueba el usuario en el móvil y en la vista previa web.
+
+Resultado (parte automática, 2026-11-09): `npm run typecheck` sin errores; `npm test` 21 archivos, 229 tests pasan (217 de los sprints 0 a 12 y 12 en `cierre.test.ts`: sin red ni URL remotas, fuentes e iconos empaquetados, sin backend/cuentas/nube, notificaciones solo locales, calendario solo con cumpleaños y aniversarios, sin mapas ni geolocalización, solo las cinco rutas, datos solo en los tres JSON, raíz del repositorio según R12, JSON de ejemplo válidos y versiones de design.md iguales a `package.json`); suite completa ejecutada 4 veces seguidas sin fallos. Se comprobó que `cierre.test.ts` falla con un archivo de sonda en `src/` que usa `fetch`, una URL `https://` y `localStorage`, y con una versión distinta en design.md. `npm run sync` y `gradlew assembleDebug` (JDK de Android Studio) terminan bien y generan `android/app/build/outputs/apk/debug/app-debug.apk`. Trazabilidad revisada: todos los tests citados en las tablas existen en `memory-app/__tests__/` y pasan; cada RF, RNF, R y CU tiene al menos uno. Adaptación de tests anteriores (regla 2; la comprobación no cambia): en una de las ejecuciones de la suite completa falló T9.12 "si la carga de datos falla…" porque `ocultar` del splash se llama en un efecto pasivo que, con la máquina cargada, se ejecuta justo después de pintar el error; los tres casos de T9.12 esperan ahora con `waitFor` a que `ocultar` se llame exactamente una vez. Reconciliación: README con las rutas de `JAVA_HOME` y `ANDROID_HOME` corregidas (habían perdido las `\`), `ajustes.json` y la compilación desde la terminal; design.md describe `cierre.test.ts` y el permiso `INTERNET` que Capacitor deja en el manifiesto (no se usa). Los JSON de ejemplo siguen vacíos (`[]`) y son válidos.
 
 
 Trazabilidad (test que pasa por requisito; los tests están en `memory-app/__tests__/`; `cierre` = `cierre.test.ts`)
@@ -420,3 +422,20 @@ Trazabilidad (test que pasa por requisito; los tests están en `memory-app/__tes
 | RF3, RF5, RF7, RF7b, RF8, RF10 (pantallas nuevas) | T10.5, T10.8, T10.11, T11.2, T11.5, T12.1 a T12.6 |
 
 RNF2, RNF5 y RNF11 solo quedan cubiertos del todo con las pruebas manuales T13.5, T13.4 y T13.7.
+
+Casos de uso (tests automáticos; el recorrido manual completo es T13.3)
+
+| CU | Tests |
+|---|---|
+| CU1 | T3.1, T5.2, T5.6, T10.7 |
+| CU2 | T3.3, T5.5, T10.12 |
+| CU3 | T5.4, T10.1, T10.4 |
+| CU4 | T3.4, T5.6b |
+| CU5 | T7.1, T12.2 |
+| CU6 | T7.2; manual T13.4 |
+| CU7 | T4.1, T6.1, T6.2b, T11.2 |
+| CU8 | T6.5b, T6.5c |
+| CU9 | T4.8, T6.3, T10.3, T11.4 |
+| CU10 | T7.5, T12.5 |
+| CU11 | T8.1, T8.2b, T12.8 |
+| CU12 | T8.10, T12.8c |

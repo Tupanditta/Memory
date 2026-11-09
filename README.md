@@ -30,8 +30,8 @@ La app está hecha con TypeScript, React y Vite, y se empaqueta como app Android
 
 Requisitos (Windows): Node 24 y npm 11, Git y Android Studio con el SDK de Android (API 35 y 36) y su JDK. No hace falta ser administrador ni cambiar nada del sistema. Variables de entorno (solo para compilar desde la terminal; Android Studio usa su propio JDK):
 
-- `JAVA_HOME` = `C:Program FilesAndroidAndroid Studiojbr` (no el Java del sistema).
-- `ANDROID_HOME` = `%LOCALAPPDATA%AndroidSdk`.
+- `JAVA_HOME` = `C:\Program Files\Android\Android Studio\jbr` (no el Java del sistema).
+- `ANDROID_HOME` = `%LOCALAPPDATA%\Android\Sdk`.
 
 Todos los comandos se ejecutan desde `memory-app/`:
 
@@ -53,6 +53,8 @@ Instalar en el móvil:
 
 Después de cambiar el código hay que repetir `npm run sync` antes de volver a pulsar Run.
 
+Compilar sin abrir Android Studio: tras `npm run sync`, ejecuta `gradlew assembleDebug` en `memory-app/android/` (con `JAVA_HOME` y `ANDROID_HOME` definidas). El APK queda en `memory-app/android/app/build/outputs/apk/debug/app-debug.apk` y se instala con `adb install -r app-debug.apk`.
+
 La vista web es solo una vista previa: no prueba el guardado real en JSON ni las notificaciones. Para eso hay que instalar la app en Android. La app solo funciona sin conexión y sus datos no salen del dispositivo salvo al exportar.
 
 ## Datos
@@ -61,6 +63,8 @@ Los datos se guardan en dos archivos JSON:
 
 - [personas.json](Software/personas.json): personas, con su dirección y sus fechas.
 - [casas.json](Software/casas.json): casas con apodo y los ids de sus personas (una persona puede estar en varias casas; una casa no puede estar vacía).
+
+La hora de las notificaciones se guarda aparte, en `ajustes.json` (`{ "horaNotificacion": "09:00" }`). Los JSON de `Software/` son ejemplos vacíos; `memory-app/__tests__/cierre.test.ts` comprueba que siguen el modelo de datos.
 
 Cada cambio se guarda en los JSON antes de mostrarse en la interfaz. Si el guardado falla, no se muestra el cambio.
 

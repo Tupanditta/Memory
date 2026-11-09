@@ -1,6 +1,6 @@
 // T9.12: mientras las fuentes o los datos no están cargados, la raíz no pinta las pantallas
 // y no oculta el splash; cuando ambos están listos, sí.
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { ProveedorApp } from "../src/estado/contexto";
 import type { Almacen } from "../src/repositorio/almacen";
@@ -47,7 +47,8 @@ describe("Sprint 9: arranque y splash", () => {
 
     await act(async () => fuentes.resolver());
     expect(await screen.findByRole("heading", { name: "Pantalla de la app" })).toBeInTheDocument();
-    expect(ocultar).toHaveBeenCalledTimes(1);
+    // `ocultar` va en un efecto pasivo, que puede ejecutarse justo después de pintar.
+    await waitFor(() => expect(ocultar).toHaveBeenCalledTimes(1));
   });
 
   test("T9.12 sin datos no se pintan las pantallas ni se oculta el splash; al cargarlos, sí", async () => {
@@ -64,7 +65,8 @@ describe("Sprint 9: arranque y splash", () => {
 
     await act(async () => datos.resolver());
     expect(await screen.findByRole("heading", { name: "Pantalla de la app" })).toBeInTheDocument();
-    expect(ocultar).toHaveBeenCalledTimes(1);
+    // `ocultar` va en un efecto pasivo, que puede ejecutarse justo después de pintar.
+    await waitFor(() => expect(ocultar).toHaveBeenCalledTimes(1));
   });
 
   test("T9.12 si la carga de datos falla, se oculta el splash y se ve el error a pantalla completa", async () => {
@@ -78,6 +80,7 @@ describe("Sprint 9: arranque y splash", () => {
     );
     expect(await screen.findByText("No se pudieron cargar los datos")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Pantalla de la app" })).toBeNull();
-    expect(ocultar).toHaveBeenCalledTimes(1);
+    // `ocultar` va en un efecto pasivo, que puede ejecutarse justo después de pintar.
+    await waitFor(() => expect(ocultar).toHaveBeenCalledTimes(1));
   });
 });
