@@ -282,30 +282,32 @@ Resultado: `npm run typecheck` sin errores; `npm test` 17 archivos, 163 tests pa
 ---
 
 #### Sprint 10. Inicio y personas
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Inicio (`pantallas/Inicio.tsx`) según design.md: saludo, buscador con botón de limpiar, acciones "Persona" y "Casa", filtros con recuentos, secciones "Personas" y "Casas y lugares", tarjetas, estados vacíos. La búsqueda sigue usando `PersonasService.buscar` y `CasasService.buscar`.
-- [ ] Detalle de persona: cabecera de perfil con hoja de opciones (editar, borrar), tarjetas Dirección, Fechas memorables y Casas, pie.
-- [ ] Formulario de persona: identidad, dirección, fechas (tipo, etiqueta, día, mes en hoja, año opcional, varias), asignar a casas, aviso de privacidad, guardar y cancelar con confirmación si hay cambios.
-- [ ] `PersonasService.crear(datos, casasIds?)`: añade la persona a las casas indicadas en el mismo `guardar`; rechaza ids de casa inexistentes.
-- [ ] Todas las confirmaciones con `DialogoConfirmacion`; ningún `window.confirm`.
+- [x] Inicio (`pantallas/Inicio.tsx`) según design.md: saludo, buscador con botón de limpiar, acciones "Persona" y "Casa", filtros con recuentos, secciones "Personas" y "Casas y lugares", tarjetas, estados vacíos. La búsqueda sigue usando `PersonasService.buscar` y `CasasService.buscar`.
+- [x] Detalle de persona: cabecera de perfil con hoja de opciones (editar, borrar), tarjetas Dirección, Fechas memorables y Casas, pie.
+- [x] Formulario de persona: identidad, dirección, fechas (tipo, etiqueta, día, mes en hoja, año opcional, varias), asignar a casas, aviso de privacidad, guardar y cancelar con confirmación si hay cambios.
+- [x] `PersonasService.crear(datos, casasIds?)`: añade la persona a las casas indicadas en el mismo `guardar`; rechaza ids de casa inexistentes.
+- [x] Todas las confirmaciones con `DialogoConfirmacion`; ningún `window.confirm`.
 
 Tests de validación
-- [ ] T10.1 Los chips `Todos (N)`, `Personas (n)`, `Casas (m)` muestran los recuentos del resultado de la búsqueda y filtran las secciones; una sección sin elementos se oculta (CU3).
-- [ ] T10.2 La tarjeta de persona muestra nombre, apodo, dirección en una línea, chip de su próxima fecha y un chip por casa; con una fecha a 7 días o menos el chip es de tono peligro y el avatar es destacado.
-- [ ] T10.3 La tarjeta de casa muestra apodo, "N miembros", dirección y los nombres de los miembros según `textoMiembros` (CU9).
-- [ ] T10.4 Una búsqueda sin resultados muestra "Sin coincidencias"; con la app vacía, "Todavía no hay nada guardado" (CU3).
-- [ ] T10.5 El detalle de persona muestra dirección (partes vacías omitidas), notas, fechas con edad y signo (solo cumpleaños), la hora de aviso y todas sus casas con dirección y convivientes; sin datos, los textos "Sin dirección guardada", "Sin fechas guardadas" y "No pertenece a ninguna casa" (RF7).
-- [ ] T10.6 Con el permiso de notificaciones denegado, el detalle muestra "Avisos desactivados (sin permiso)" (T7.6).
-- [ ] T10.7 Formulario con nombre vacío: no guarda, muestra "Escribe el nombre" bajo el campo y no escribe en el JSON (CU1, RNF1).
-- [ ] T10.8 Una fecha 31/02 muestra el error bajo la fila y no guarda (RF3); se pueden añadir y quitar varias fechas.
-- [ ] T10.9 Crear una persona con dos casas marcadas la guarda y la añade a ambas casas en una sola operación; si el guardado falla, no cambia ningún archivo ni la pantalla (RNF8, RNF9).
-- [ ] T10.10 `PersonasService.crear` con un id de casa inexistente se rechaza y no escribe (RNF10).
-- [ ] T10.11 Al editar, desmarcar una casa donde la persona es la única pide confirmación; aceptar borra la casa, cancelar la deja igual (RF7b).
-- [ ] T10.12 Borrar desde la hoja de opciones avisa de las casas que se borrarán con ella; aceptar borra en una sola operación; cancelar no cambia nada (CU2, RNF8).
-- [ ] T10.13 "Cancelar" con cambios sin guardar pide confirmación; sin cambios vuelve directamente.
-- [ ] T10.14 Los tests T5.1 a T5.6 siguen pasando (regla 8) y la suite acumulada pasa completa.
+- [x] T10.1 Los chips `Todos (N)`, `Personas (n)`, `Casas (m)` muestran los recuentos del resultado de la búsqueda y filtran las secciones; una sección sin elementos se oculta (CU3).
+- [x] T10.2 La tarjeta de persona muestra nombre, apodo, dirección en una línea, chip de su próxima fecha y un chip por casa; con una fecha a 7 días o menos el chip es de tono peligro y el avatar es destacado.
+- [x] T10.3 La tarjeta de casa muestra apodo, "N miembros", dirección y los nombres de los miembros según `textoMiembros` (CU9).
+- [x] T10.4 Una búsqueda sin resultados muestra "Sin coincidencias"; con la app vacía, "Todavía no hay nada guardado" (CU3).
+- [x] T10.5 El detalle de persona muestra dirección (partes vacías omitidas), notas, fechas con edad y signo (solo cumpleaños), la hora de aviso y todas sus casas con dirección y convivientes; sin datos, los textos "Sin dirección guardada", "Sin fechas guardadas" y "No pertenece a ninguna casa" (RF7).
+- [x] T10.6 Con el permiso de notificaciones denegado, el detalle muestra "Avisos desactivados (sin permiso)" (T7.6).
+- [x] T10.7 Formulario con nombre vacío: no guarda, muestra "Escribe el nombre" bajo el campo y no escribe en el JSON (CU1, RNF1).
+- [x] T10.8 Una fecha 31/02 muestra el error bajo la fila y no guarda (RF3); se pueden añadir y quitar varias fechas.
+- [x] T10.9 Crear una persona con dos casas marcadas la guarda y la añade a ambas casas en una sola operación; si el guardado falla, no cambia ningún archivo ni la pantalla (RNF8, RNF9).
+- [x] T10.10 `PersonasService.crear` con un id de casa inexistente se rechaza y no escribe (RNF10).
+- [x] T10.11 Al editar, desmarcar una casa donde la persona es la única pide confirmación; aceptar borra la casa, cancelar la deja igual (RF7b).
+- [x] T10.12 Borrar desde la hoja de opciones avisa de las casas que se borrarán con ella; aceptar borra en una sola operación; cancelar no cambia nada (CU2, RNF8).
+- [x] T10.13 "Cancelar" con cambios sin guardar pide confirmación; sin cambios vuelve directamente.
+- [x] T10.14 Los tests T5.1 a T5.6 siguen pasando (regla 8) y la suite acumulada pasa completa.
+
+Resultado: `npm run typecheck` sin errores; `npm test` 18 archivos, 189 tests pasan (163 de los sprints 0 a 9 y 26 en `inicioPersonas.test.tsx`: T10.1 a T10.13 desde la interfaz, más app vacía (T10.4b), ficha sin datos (T10.5b), permiso denegado al guardar (T10.6b), quitar la única fecha al editar (T10.8b), fallo al crear con casas (T10.9b), fallo al eliminar (T10.12b), descartar al editar (T10.13b), ningún `window.confirm`, y `PersonasService` con casas: un solo guardado, sin casas solo `personas.json`, fallo del segundo archivo, id inexistente (T10.10) y `editar` con casas (T10.11)); suite completa ejecutada 3 veces seguidas sin fallos; `npm run build` genera `dist/`. Se comprobó que T10.11 falla si el formulario no pide confirmación al desmarcar la casa. Decisiones del usuario (2026-11-09, anotadas en design.md, "Detalles fijados en el Sprint 10"): siempre hay un bloque de fecha y quitar el único lo vacía; desmarcar la casa de la que es el único miembro la borra al guardar, no al aceptar. Iconos `auto_awesome`, `delete_outline`, `person_outline` y `tips_and_updates` del prototipo no existen en `material-symbols` 0.48.3: se usan `star_shine`, `delete`, `person` y `lightbulb` (tabla de desviaciones). Adaptaciones de tests anteriores (regla 8; la comprobación no cambia): T5.1 a T5.6, T6.1, T6.3 a T6.6, T7.2 a T7.4, T7.6, la prueba de vista previa web y T8.9 y T8.10 usan las etiquetas nuevas ("Nombre completo", "Apodo o alias", "Ciudad o Localidad", "Año (opc.)"), la hoja de meses, la hoja "Opciones de contacto" ("Editar información", "Eliminar de contactos", confirmar con "Eliminar"), el bloque de fecha inicial y "Añadir otra fecha", las regiones nuevas ("Dirección particular", "Fechas memorables", "Casas a las que pertenece", "Casas y lugares"), el enlace "Abrir {casa}", el título de cada tarjeta de Inicio (con su dirección y miembros comprobados aparte) y el nombre accesible "Aviso de notificaciones" del `BannerAviso` (el aviso emergente también es `role="status"`); en T5.3, "Cancelar" con cambios pide descartar. Ayudas comunes en `__tests__/ayudas.ts`. Código nuevo o rehecho: `pantallas/Inicio.tsx`, `pantallas/Persona.tsx`, `componentes/FormularioPersona.tsx`, `PersonasService.crear/editar` con `casasIds`, utilidades de presentación (`direccionCorta`, `lineasDireccion`, `proximaDe`, `textoChipFecha`…), `emergente` y `permiso` en `ProveedorApp`. La casa (detalle y formulario) sigue igual hasta el Sprint 11. El aspecto se comprueba en la vista previa web y en el móvil (T13.8).
 
 ---
 

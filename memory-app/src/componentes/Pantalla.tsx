@@ -1,5 +1,7 @@
 // Cuerpo de una pantalla bajo la cabecera fija: márgenes, hueco inferior y avisos.
 import type { ReactNode } from "react";
+import { useApp } from "../estado/contexto";
+import AvisoEmergente from "./AvisoEmergente";
 import BannerAviso from "./BannerAviso";
 import BannerError from "./BannerError";
 
@@ -10,12 +12,14 @@ interface Props {
 }
 
 export default function Pantalla({ tipo, children }: Props) {
+  const { emergente, limpiarEmergente } = useApp();
   const inferior = tipo === "pestana" ? "pb-[calc(var(--margen-seguro-inf)+7rem)]" : "pb-[calc(var(--margen-seguro-inf)+2.5rem)]";
   return (
     <main className={`flex min-h-screen flex-col gap-space-lg bg-surface px-margin pt-16 ${inferior}`}>
       <BannerError />
       <BannerAviso />
       {children}
+      <AvisoEmergente mensaje={emergente?.texto ?? null} icono={emergente?.icono} onTerminar={limpiarEmergente} />
     </main>
   );
 }

@@ -9,7 +9,8 @@ import { crearCompartidor, SelectorArchivoInput, type Compartidor, type Selector
 import { CasasService } from "../servicios/casasService";
 import { IntercambioService, type ResumenImportacion } from "../servicios/intercambioService";
 import { NotificacionesService, type EstadoNotificaciones } from "../servicios/notificacionesService";
-import { crearNotificador, type Notificador } from "../servicios/notificador";
+import { crearNotificador, type EstadoPermiso, type Notificador } from "../servicios/notificador";
+import type { NombreIcono } from "../componentes/Icono";
 import { PersonasService } from "../servicios/personasService";
 import { Tienda } from "../servicios/tienda";
 import { crearSplash, fuentesListas, type Splash } from "./arranque";
@@ -23,6 +24,15 @@ export interface EstadoApp {
   error: string | null;
   /** Aviso que no es un fallo de guardado (p. ej. notificaciones sin permiso). */
   aviso: string | null;
+  /** Aviso emergente tras una acción correcta (p. ej. "Persona guardada…"); no se guarda. */
+  emergente: Emergente | null;
+  /** Permiso de notificaciones; `null` mientras no se conoce. */
+  permiso: EstadoPermiso | null;
+}
+
+export interface Emergente {
+  texto: string;
+  icono: NombreIcono;
 }
 
 export type Accion =
@@ -32,9 +42,11 @@ export type Accion =
   | { tipo: "error"; error: string }
   | { tipo: "limpiarError" }
   | { tipo: "aviso"; aviso: string }
-  | { tipo: "limpiarAviso" };
+  | { tipo: "limpiarAviso" }
+  | { tipo: "emergente"; emergente: Emergente | null }
+  | { tipo: "permiso"; permiso: EstadoPermiso };
 
-export const estadoInicial: EstadoApp = { fase: "cargando", datos: null, error: null, aviso: null };
+export const estadoInicial: EstadoApp = { fase: "cargando", datos: null, error: null, aviso: null, emergente: null, permiso: null };
 
 export function reducer(estado: EstadoApp, accion: Accion): EstadoApp {
   switch (accion.tipo) {
@@ -53,11 +65,16 @@ export function reducer(estado: EstadoApp, accion: Accion): EstadoApp {
       return { ...estado, aviso: accion.aviso };
     case "limpiarAviso":
       return { ...estado, aviso: null };
+    case "emergente":
+      return { ...estado, emergente: accion.emergente };
+    case "permiso":
+      return { ...estado, permiso: accion.permiso };
   }
 }
 
 interface Servicios {
   tienda: Tienda;
+  notificador: Notificador;
   personas: PersonasService;
   casas: CasasService;
   ajustes: AjustesService;
@@ -69,6 +86,9 @@ export interface ValorContexto {
   datos: Datos;
   error: string | null;
   aviso: string | null;
+  emergente: Emergente | null;
+  /** Permiso de notificaciones; `null` mientras no se conoce. */
+  permiso: EstadoPermiso | null;
   personas: PersonasService;
   casas: CasasService;
   ajustes: AjustesService;
@@ -79,6 +99,9 @@ export interface ValorContexto {
   ejecutar<T>(operacion: (servicios: Servicios) => Promise<Resultado<T>>): Promise<Resultado<T>>;
   limpiarError(): void;
   limpiarAviso(): void;
+  /** Muestra un aviso emergente (2,4 s); sigue visible aunque se cambie de pantalla. */
+  mostrarEmergente(texto: string, icono: NombreIcono): void;
+  limpiarEmergente(): void;
   /** Elige un archivo e importa su contenido; `null` si el usuario cancela. */
   importarDesdeArchivo(): Promise<Resultado<ResumenImportacion> | null>;
 }
@@ -127,15 +150,22 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
         return;
       }
       const tienda = new Tienda(repositorio, resultado.valor);
+      const notificador = externosElegidos.current?.notificador ?? crearNotificador();
       servicios.current = {
         tienda,
+        notificador,
         personas: new PersonasService(tienda),
         casas: new CasasService(tienda),
         ajustes: new AjustesService(tienda),
-        notificaciones: new NotificacionesService(externosElegidos.current?.notificador ?? crearNotificador()),
+        notificaciones: new NotificacionesService(notificador),
         intercambio: new IntercambioService(tienda, externosElegidos.current?.compartidor ?? crearCompartidor()),
       };
       despachar({ tipo: "cargado", datos: tienda.datos });
+      // El permiso se consulta sin esperar (no retrasa el arranque); un fallo se ignora.
+      notificador.permiso().then(
+        (permiso) => !cancelado && despachar({ tipo: "permiso", permiso }),
+        () => undefined,
+      );
     });
     return () => {
       cancelado = true;
@@ -166,6 +196,8 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   }, []);
 
   const avisarSiHaceFalta = (estadoNotificaciones: EstadoNotificaciones) => {
+    if (estadoNotificaciones === "programadas") despachar({ tipo: "permiso", permiso: "concedido" });
+    if (estadoNotificaciones === "sinPermiso") despachar({ tipo: "permiso", permiso: "denegado" });
     if (estadoNotificaciones === "error") despachar({ tipo: "aviso", aviso: AVISO_FALLO_NOTIFICACIONES });
     if (estadoNotificaciones === "sinPermiso" && !avisoMostrado.current) {
       avisoMostrado.current = true;
@@ -175,6 +207,8 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
 
   const limpiarError = useCallback(() => despachar({ tipo: "limpiarError" }), []);
   const limpiarAviso = useCallback(() => despachar({ tipo: "limpiarAviso" }), []);
+  const mostrarEmergente = useCallback((texto: string, icono: NombreIcono) => despachar({ tipo: "emergente", emergente: { texto, icono } }), []);
+  const limpiarEmergente = useCallback(() => despachar({ tipo: "emergente", emergente: null }), []);
 
   const importarDesdeArchivo = useCallback(async (): Promise<Resultado<ResumenImportacion> | null> => {
     const selector = externosElegidos.current?.selector ?? new SelectorArchivoInput();
@@ -212,12 +246,16 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
     datos: estado.datos,
     error: estado.error,
     aviso: estado.aviso,
+    emergente: estado.emergente,
+    permiso: estado.permiso,
     personas: servicios.current.personas,
     casas: servicios.current.casas,
     ajustes: servicios.current.ajustes,
     ejecutar,
     limpiarError,
     limpiarAviso,
+    mostrarEmergente,
+    limpiarEmergente,
     importarDesdeArchivo,
   };
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;

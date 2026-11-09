@@ -1,5 +1,6 @@
 // Sprint 6: pantallas de casas (T6.1 a T6.6), con el repositorio real sobre un
-// sistema de archivos simulado en memoria.
+// sistema de archivos simulado en memoria. Desde el Sprint 10 (regla 8) Inicio y la
+// ficha de persona tienen la interfaz nueva; lo que se comprueba no cambia.
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -7,6 +8,7 @@ import { describe, expect, test } from "vitest";
 import { rutas } from "../src/App";
 import { ProveedorApp } from "../src/estado/contexto";
 import { direccionVacia, type Casa, type Direccion, type Persona } from "../src/modelos/tipos";
+import { seccionInicio, tarjetaInicio, titulosInicio } from "./ayudas";
 import { bancoArchivos } from "./simulados/almacenes";
 
 const persona = (id: string, nombre: string): Persona => ({ id, nombre, apodo: "", direccion: direccionVacia(), fechas: [] });
@@ -35,10 +37,13 @@ async function montar({ personas = [] as Persona[], casas = [] as Casa[], ruta =
   return { banco, router, usuario, leer };
 }
 
-const regionCasas = () => screen.queryByRole("region", { name: "Casas" });
-const casasEnLista = () => {
-  const region = regionCasas();
-  return region ? within(region).getAllByRole("listitem").map((li) => li.textContent) : [];
+const regionCasas = () => seccionInicio("Casas y lugares");
+const casasEnLista = () => titulosInicio("Casas y lugares");
+/** La tarjeta de la casa en Inicio muestra su dirección corta y los nombres de los miembros. */
+const esperarTarjetaCasa = (apodo: string, direccion: string, miembros: string) => {
+  const tarjeta = tarjetaInicio("Casas y lugares", apodo);
+  expect(tarjeta).toHaveTextContent(direccion);
+  expect(tarjeta).toHaveTextContent(miembros);
 };
 const miembrosEnDetalle = () => within(screen.getByRole("region", { name: "Miembros" })).getAllByRole("link").map((a) => a.textContent);
 
@@ -76,7 +81,8 @@ describe("Sprint 6: pantallas de casas", () => {
     expect(within(screen.getByRole("region", { name: "Dirección" })).getByText("Toledo")).toBeInTheDocument();
 
     await usuario.click(screen.getByRole("button", { name: "Volver" }));
-    expect(casasEnLista()).toEqual(["Casa de los abuelosCalle Sol, ToledoAna, Carla"]);
+    expect(casasEnLista()).toEqual(["Casa de los abuelos"]);
+    esperarTarjetaCasa("Casa de los abuelos", "Calle Sol", "Ana, Carla");
   });
 
   test("T6.2 el formulario no permite guardar sin personas seleccionadas (R8)", async () => {
@@ -115,15 +121,16 @@ describe("Sprint 6: pantallas de casas", () => {
       ],
     });
     const buscador = screen.getByRole("searchbox", { name: "Buscar" });
-    const fila = "Casa de los abuelosCalle Sol 5, ToledoAna, Bruno";
     for (const consulta of ["ABUELOS", "calle sol", "toledo", "bruno"]) {
       await usuario.clear(buscador);
       await usuario.type(buscador, consulta);
-      expect(casasEnLista()).toEqual([fila]);
+      expect(casasEnLista()).toEqual(["Casa de los abuelos"]);
+      esperarTarjetaCasa("Casa de los abuelos", "Calle Sol 5", "Ana, Bruno");
     }
     await usuario.clear(buscador);
     await usuario.type(buscador, "cadiz");
-    expect(casasEnLista()).toEqual(["Piso de la playaCádizCarla"]);
+    expect(casasEnLista()).toEqual(["Piso de la playa"]);
+    esperarTarjetaCasa("Piso de la playa", "Cádiz", "Carla");
 
     // Desde la búsqueda se abre el detalle con la dirección y todos los miembros.
     await usuario.clear(buscador);
@@ -142,16 +149,16 @@ describe("Sprint 6: pantallas de casas", () => {
       casas: [casa("c1", "Casa de Madrid", ["p1", "p2"], { ciudad: "Madrid" }), casa("c2", "Casa del pueblo", ["p1"], { ciudad: "Soria" })],
       ruta: "/persona/p1",
     });
-    const casas = within(screen.getByRole("region", { name: "Casas" })).getAllByRole("listitem");
+    const casas = within(screen.getByRole("region", { name: "Casas a las que pertenece" })).getAllByRole("listitem");
     expect(casas).toHaveLength(2);
     expect(casas[0]).toHaveTextContent("Casa de Madrid");
     expect(casas[0]).toHaveTextContent("Madrid");
-    expect(casas[0]).toHaveTextContent("Con: Bruno");
+    expect(within(casas[0]).getByRole("link", { name: "Bruno" })).toBeInTheDocument();
     expect(casas[1]).toHaveTextContent("Casa del pueblo");
     expect(casas[1]).toHaveTextContent("Soria");
     expect(casas[1]).toHaveTextContent("Vive sola en esta casa");
 
-    await usuario.click(within(casas[1]).getByRole("link", { name: "Casa del pueblo" }));
+    await usuario.click(within(casas[1]).getByRole("link", { name: "Abrir Casa del pueblo" }));
     expect(router.state.location.pathname).toBe("/casa/c2");
     expect(await screen.findByRole("heading", { name: "Casa del pueblo" })).toBeInTheDocument();
   });
@@ -177,8 +184,9 @@ describe("Sprint 6: pantallas de casas", () => {
     await usuario.click(screen.getByRole("button", { name: "Borrar casa" }));
     expect(router.state.location.pathname).toBe("/");
     // React Router pinta la navegación en una transición: se espera a que aparezca Inicio.
-    await screen.findByRole("region", { name: "Casas" });
-    expect(casasEnLista()).toEqual(["OtraBruno"]);
+    await screen.findByRole("region", { name: "Casas y lugares" });
+    expect(casasEnLista()).toEqual(["Otra"]);
+    expect(tarjetaInicio("Casas y lugares", "Otra")).toHaveTextContent("Bruno");
     expect(leer("casas.json")).toEqual([casa("c2", "Otra", ["p2"])]);
     // Borrar la casa no borra a la persona.
     expect(leer("personas.json")).toEqual([ana, bruno]);

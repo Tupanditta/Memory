@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { direccionVacia, type Casa, type Direccion, type Persona } from "../modelos/tipos";
 import { normalizarTexto } from "../utilidades/texto";
 import Boton from "./Boton";
-import Campo from "./Campo";
+import Campo, { ETIQUETA_FORMULARIO } from "./Campo";
 import CamposDireccion from "./CamposDireccion";
 
 export interface ValoresCasa {
@@ -59,7 +59,7 @@ export default function FormularioCasa({ inicial, personas, onGuardar, onCancela
 
   return (
     <form onSubmit={enviar} noValidate className="flex flex-col gap-6">
-      <Campo etiqueta="Apodo" value={apodo} onChange={(e) => setApodo(e.target.value)} required aria-invalid={aviso === AVISO_SIN_APODO} />
+      <Campo etiqueta="Apodo" claseEtiqueta={ETIQUETA_FORMULARIO} value={apodo} onChange={(e) => setApodo(e.target.value)} required aria-invalid={aviso === AVISO_SIN_APODO} />
 
       <CamposDireccion valor={direccion} onChange={setDireccion} forma="pildora" />
 

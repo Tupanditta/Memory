@@ -1,5 +1,7 @@
 // Sprint 5: estado y pantallas de personas (T5.1 a T5.6), con el repositorio real
-// sobre un sistema de archivos simulado en memoria.
+// sobre un sistema de archivos simulado en memoria. Desde el Sprint 10 (regla 8) los
+// pasos usan la interfaz nueva (hoja de opciones, hoja de meses, textos nuevos); lo
+// que se comprueba no cambia.
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
@@ -7,6 +9,7 @@ import { describe, expect, test } from "vitest";
 import { rutas } from "../src/App";
 import { ProveedorApp } from "../src/estado/contexto";
 import { direccionVacia, type Casa, type Direccion, type Persona } from "../src/modelos/tipos";
+import { elegirMes, opcionDePerfil, seccionInicio, tarjetaInicio, titulosInicio } from "./ayudas";
 import { bancoArchivos } from "./simulados/almacenes";
 
 const persona = (id: string, nombre: string, cambios: Partial<Persona> = {}): Persona => ({
@@ -44,16 +47,15 @@ async function montar({ personas = [] as Persona[], casas = [] as Casa[], ruta =
   return { banco, router, usuario, leer };
 }
 
-const lista = () => screen.queryByRole("region", { name: "Personas" });
-const nombresEnLista = () => {
-  const region = lista();
-  return region ? within(region).getAllByRole("link").map((a) => a.textContent) : [];
-};
+const lista = () => seccionInicio("Personas");
+const nombresEnLista = () => titulosInicio("Personas");
+const tarjeta = (nombre: string) => tarjetaInicio("Personas", nombre);
 
 describe("Sprint 5: estado y pantallas de personas", () => {
   test("T5.1 al arrancar, la UI muestra las personas del JSON (RNF7)", async () => {
     await montar({ personas: [persona("p1", "Ana García"), persona("p2", "Bruno", { apodo: "Bru" })] });
-    expect(nombresEnLista()).toEqual(["Ana García", "Bruno (Bru)"]);
+    expect(nombresEnLista()).toEqual(["Ana García", "Bruno"]);
+    expect(tarjeta("Bruno")).toHaveAccessibleName("Bruno (Bru)");
   });
 
   test("T5.1b si un JSON está dañado, se muestra un error claro y no se escribe nada", async () => {
@@ -72,14 +74,13 @@ describe("Sprint 5: estado y pantallas de personas", () => {
   test("T5.2 crear una persona desde el formulario la muestra en la lista y está en el JSON (CU1)", async () => {
     const { usuario, leer, router } = await montar();
     await usuario.click(screen.getByRole("link", { name: "Añadir persona" }));
-    await usuario.type(screen.getByLabelText("Nombre"), "José Pérez");
-    await usuario.type(screen.getByLabelText("Apodo"), "Pepe");
+    await usuario.type(screen.getByLabelText("Nombre completo"), "José Pérez");
+    await usuario.type(screen.getByLabelText("Apodo o alias"), "Pepe");
     await usuario.type(screen.getByLabelText("Calle"), "Calle Mayor");
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
     const fecha = screen.getByRole("group", { name: "Fecha 1" });
     await usuario.type(within(fecha).getByLabelText("Día"), "14");
-    await usuario.type(within(fecha).getByLabelText("Mes"), "3");
-    await usuario.type(within(fecha).getByLabelText("Año (opcional)"), "1990");
+    await elegirMes(usuario, fecha, "Marzo");
+    await usuario.type(within(fecha).getByLabelText("Año (opc.)"), "1990");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(await screen.findByRole("heading", { name: "José Pérez" })).toBeInTheDocument();
@@ -94,21 +95,25 @@ describe("Sprint 5: estado y pantallas de personas", () => {
     expect(router.state.location.pathname).toBe(`/persona/${guardadas[0].id}`);
 
     await usuario.click(screen.getByRole("button", { name: "Volver" }));
-    expect(nombresEnLista()).toEqual(["José Pérez (Pepe)Calle Mayor"]);
+    expect(nombresEnLista()).toEqual(["José Pérez"]);
+    expect(tarjeta("José Pérez")).toHaveAccessibleName("José Pérez (Pepe)");
+    expect(tarjeta("José Pérez")).toHaveTextContent("Calle Mayor");
   });
 
   test("T5.3 si el guardado falla, la persona no aparece en la lista y se ve un mensaje de error (RNF9)", async () => {
     const { usuario, banco, leer } = await montar({ personas: [persona("p1", "Ana")] });
     await usuario.click(screen.getByRole("link", { name: "Añadir persona" }));
-    await usuario.type(screen.getByLabelText("Nombre"), "Bruno");
+    await usuario.type(screen.getByLabelText("Nombre completo"), "Bruno");
     banco.fallarEscrituraTmp("personas.json");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No se pudieron guardar los cambios");
     expect(leer("personas.json")).toEqual([persona("p1", "Ana")]);
     // Sigue en el formulario con lo escrito; al volver, la lista no la muestra.
-    expect(screen.getByLabelText("Nombre")).toHaveValue("Bruno");
+    expect(screen.getByLabelText("Nombre completo")).toHaveValue("Bruno");
     await usuario.click(screen.getByRole("button", { name: "Cancelar" }));
+    await usuario.click(within(screen.getByRole("alertdialog", { name: "¿Descartar los cambios?" })).getByRole("button", { name: "Descartar" }));
+    await screen.findByRole("region", { name: "Personas" });
     expect(nombresEnLista()).toEqual(["Ana"]);
     expect(screen.getByRole("alert")).toHaveTextContent("No se pudieron guardar los cambios");
   });
@@ -134,30 +139,35 @@ describe("Sprint 5: estado y pantallas de personas", () => {
     expect(nombresEnLista()).toEqual(["JOSÉ Ruiz"]);
     await usuario.clear(buscador);
     await usuario.type(buscador, "timbre");
-    expect(nombresEnLista()).toEqual(["Ana García (Anita)Calle Alcalá 42, 3B, Madrid"]);
+    expect(nombresEnLista()).toEqual(["Ana García"]);
+    expect(tarjeta("Ana García")).toHaveAccessibleName("Ana García (Anita)");
+    expect(tarjeta("Ana García")).toHaveTextContent("Calle Alcalá 42, 3B");
     await usuario.clear(buscador);
     await usuario.type(buscador, "zzz");
     expect(lista()).toBeNull();
     expect(screen.getByText("Sin coincidencias")).toBeInTheDocument();
     await usuario.clear(buscador);
     await usuario.type(buscador, "abuelos");
-    expect(nombresEnLista()).toEqual(["Ana García (Anita)Calle Alcalá 42, 3B, Madrid", "Pedro García"]);
+    expect(nombresEnLista()).toEqual(["Ana García", "Pedro García"]);
 
     await usuario.click(screen.getByRole("link", { name: /Ana García/ }));
     expect(await screen.findByRole("heading", { name: "Ana García" })).toBeInTheDocument();
     expect(screen.getByText("“Anita”")).toBeInTheDocument();
 
-    const direccion = screen.getByRole("region", { name: "Dirección" });
-    for (const texto of ["Calle Alcalá", "42", "3", "B", "Madrid", "Timbre roto"]) expect(within(direccion).getByText(texto)).toBeInTheDocument();
+    const direccion = screen.getByRole("region", { name: "Dirección particular" });
+    for (const texto of ["Calle Alcalá 42", "Piso 3, Puerta B", "Madrid", "Timbre roto"]) expect(within(direccion).getByText(texto)).toBeInTheDocument();
 
-    const fechas = within(screen.getByRole("region", { name: "Fechas" })).getAllByRole("listitem").map((li) => li.textContent);
-    expect(fechas).toEqual(["Cumpleaños: 14/03/1990", "Aniversario (Boda): 02/06"]);
+    const fechas = within(screen.getByRole("region", { name: "Fechas memorables" })).getAllByRole("listitem").map((li) => li.textContent);
+    expect(fechas).toHaveLength(2);
+    expect(fechas[0]).toMatch(/^🎂Cumpleaños14 de Marzo \(1990 — \d+ años\)Piscis$/);
+    expect(fechas[1]).toBe("💍Boda2 de Junio");
 
-    const casas = within(screen.getByRole("region", { name: "Casas" })).getAllByRole("listitem");
+    const casas = within(screen.getByRole("region", { name: "Casas a las que pertenece" })).getAllByRole("listitem");
     expect(casas).toHaveLength(2);
     expect(casas[0]).toHaveTextContent("Casa de los abuelos");
-    expect(casas[0]).toHaveTextContent("Calle Sol 5, Toledo");
-    expect(casas[0]).toHaveTextContent("Con: Pedro García");
+    expect(casas[0]).toHaveTextContent("Calle Sol 5");
+    expect(casas[0]).toHaveTextContent("Convivientes en esta casa");
+    expect(within(casas[0]).getByRole("link", { name: "Pedro García" })).toBeInTheDocument();
     expect(casas[1]).toHaveTextContent("Piso de la playa");
     expect(casas[1]).toHaveTextContent("Vive sola en esta casa");
   });
@@ -167,12 +177,12 @@ describe("Sprint 5: estado y pantallas de personas", () => {
       personas: [persona("p1", "Ana", { fechas: [{ tipo: "cumpleaños", etiqueta: "", dia: 1, mes: 1 }] }), persona("p2", "Bruno")],
       ruta: "/persona/p1",
     });
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
-    const nombre = screen.getByLabelText("Nombre");
+    await opcionDePerfil(usuario, "Editar información");
+    const nombre = screen.getByLabelText("Nombre completo");
     expect(nombre).toHaveValue("Ana");
     await usuario.clear(nombre);
     await usuario.type(nombre, "Ana María");
-    await usuario.type(screen.getByLabelText("Ciudad"), "Sevilla");
+    await usuario.type(screen.getByLabelText("Ciudad o Localidad"), "Sevilla");
     await usuario.click(within(screen.getByRole("group", { name: "Fecha 1" })).getByRole("button", { name: "Quitar fecha" }));
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
@@ -182,7 +192,8 @@ describe("Sprint 5: estado y pantallas de personas", () => {
       persona("p2", "Bruno"),
     ]);
     await usuario.click(screen.getByRole("button", { name: "Volver" }));
-    expect(nombresEnLista()).toEqual(["Ana MaríaSevilla", "Bruno"]);
+    expect(nombresEnLista()).toEqual(["Ana María", "Bruno"]);
+    expect(tarjeta("Ana María")).toHaveTextContent("Sevilla");
   });
 
   test("T5.5 borrar una persona avisa de las casas que se borran y actualiza la lista y el JSON (CU2, RF7b)", async () => {
@@ -191,16 +202,16 @@ describe("Sprint 5: estado y pantallas de personas", () => {
       casas: [casa("c1", "Casa de Ana", ["p1"]), casa("c2", "Casa compartida", ["p1", "p2"])],
       ruta: "/persona/p1",
     });
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
-    const dialogo = screen.getByRole("alertdialog", { name: "Confirmar borrado" });
+    await opcionDePerfil(usuario, "Eliminar de contactos");
+    const dialogo = screen.getByRole("alertdialog", { name: "¿Eliminar a Ana?" });
     expect(dialogo).toHaveTextContent("También se borrarán estas casas, porque se quedarían vacías: Casa de Ana");
 
     // Cancelar no cambia nada.
     await usuario.click(within(dialogo).getByRole("button", { name: "Cancelar" }));
     expect(leer("personas.json")).toHaveLength(2);
 
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
-    await usuario.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await opcionDePerfil(usuario, "Eliminar de contactos");
+    await usuario.click(screen.getByRole("button", { name: "Eliminar" }));
     expect(router.state.location.pathname).toBe("/");
     // React Router pinta la navegación en una transición: se espera a que aparezca Inicio.
     await screen.findByRole("region", { name: "Personas" });
@@ -212,8 +223,8 @@ describe("Sprint 5: estado y pantallas de personas", () => {
   test("T5.5 si el borrado falla, la persona sigue y se ve el error (RNF9)", async () => {
     const { usuario, banco, leer } = await montar({ personas: [persona("p1", "Ana")], ruta: "/persona/p1" });
     banco.fallarConfirmar("personas.json");
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
-    await usuario.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await opcionDePerfil(usuario, "Eliminar de contactos");
+    await usuario.click(screen.getByRole("button", { name: "Eliminar" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("No se pudieron guardar los cambios");
     expect(screen.getByRole("heading", { name: "Ana" })).toBeInTheDocument();
     expect(leer("personas.json")).toEqual([persona("p1", "Ana")]);
@@ -222,10 +233,10 @@ describe("Sprint 5: estado y pantallas de personas", () => {
   test("T5.6 con el nombre vacío, el formulario no guarda y pide el nombre (CU1)", async () => {
     const { usuario, banco, router } = await montar({ ruta: "/persona/nueva" });
     const antes = banco.archivos();
-    await usuario.type(screen.getByLabelText("Apodo"), "Sin nombre");
+    await usuario.type(screen.getByLabelText("Apodo o alias"), "Sin nombre");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Escribe el nombre");
-    await usuario.type(screen.getByLabelText("Nombre"), "   ");
+    await usuario.type(screen.getByLabelText("Nombre completo"), "   ");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Escribe el nombre");
     expect(banco.archivos()).toEqual(antes);
@@ -235,13 +246,12 @@ describe("Sprint 5: estado y pantallas de personas", () => {
   test("T5.6b una fecha inválida en el formulario no se guarda y se explica el error (CU4)", async () => {
     const { usuario, banco } = await montar({ ruta: "/persona/nueva" });
     const antes = banco.archivos();
-    await usuario.type(screen.getByLabelText("Nombre"), "Ana");
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
+    await usuario.type(screen.getByLabelText("Nombre completo"), "Ana");
     const fecha = screen.getByRole("group", { name: "Fecha 1" });
     await usuario.type(within(fecha).getByLabelText("Día"), "31");
-    await usuario.type(within(fecha).getByLabelText("Mes"), "2");
+    await elegirMes(usuario, fecha, "Febrero");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("Fecha 1: El día no existe en ese mes");
+    expect(within(fecha).getByRole("alert")).toHaveTextContent("El día no existe en ese mes");
     expect(banco.archivos()).toEqual(antes);
   });
 });

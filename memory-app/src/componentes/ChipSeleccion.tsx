@@ -26,7 +26,7 @@ export default function ChipSeleccion({ activo, onClick, uso = "tipo", className
       className={`zona-tactil inline-flex items-center gap-1.5 rounded-full active:scale-95 ${activo ? ACTIVO[uso] : "bg-surface-container-low text-on-surface-variant"} ${className}`}
     >
       {children}
-      {uso === "casa" && activo && <Icono nombre="check" tamano={16} />}
+      {uso === "casa" && activo && <Icono nombre="check" tamano={16} className="text-tertiary" />}
     </button>
   );
 }

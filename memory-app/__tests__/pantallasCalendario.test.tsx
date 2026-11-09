@@ -8,6 +8,7 @@ import { rutas } from "../src/App";
 import { AVISO_SIN_PERMISO, ProveedorApp } from "../src/estado/contexto";
 import { direccionVacia, type Fecha, type Persona } from "../src/modelos/tipos";
 import { avisosDe } from "../src/servicios/notificacionesService";
+import { avisoNotificaciones, elegirMes, opcionDePerfil } from "./ayudas";
 import { bancoArchivos, type Banco } from "./simulados/almacenes";
 import { NotificadorSimulado } from "./simulados/notificador";
 
@@ -85,22 +86,21 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     const { usuario } = await montar({ hora: "08:15", notificador, ruta: "/persona/nueva" });
 
     // Una persona sin fechas no pide permiso.
-    await usuario.type(screen.getByLabelText("Nombre"), "Bruno");
+    await usuario.type(screen.getByLabelText("Nombre completo"), "Bruno");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     await screen.findByRole("heading", { name: "Bruno" });
     await waitFor(() => expect(notificador.programaciones + notificador.pedidos).toBe(0));
 
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
+    await opcionDePerfil(usuario, "Editar información");
     const fecha = screen.getByRole("group", { name: "Fecha 1" });
     await usuario.type(within(fecha).getByLabelText("Día"), "14");
-    await usuario.type(within(fecha).getByLabelText("Mes"), "3");
+    await elegirMes(usuario, fecha, "Marzo");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
     await waitFor(() => expect(notificador.programadas).toHaveLength(1));
     expect(notificador.pedidos).toBe(1);
     expect(notificador.programadas[0]).toMatchObject({ titulo: "Mañana: cumpleaños de Bruno", dia: 13, mes: 3, hora: 8, minuto: 15 });
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(avisoNotificaciones()).not.toBeInTheDocument();
   });
 
   test("T7.3 borrar una persona o una fecha cancela sus notificaciones", async () => {
@@ -109,13 +109,13 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     await notificador.programar(avisosDe(personas, "09:00")); // de una sesión anterior
     const { usuario, leer } = await montar({ personas, notificador, ruta: "/persona/p2" });
 
-    await usuario.click(screen.getByRole("button", { name: "Borrar" }));
-    await usuario.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await opcionDePerfil(usuario, "Eliminar de contactos");
+    await usuario.click(screen.getByRole("button", { name: "Eliminar" }));
     await screen.findByRole("heading", { name: "Memory" });
     await waitFor(() => expect(notificador.programadas).toEqual(avisosDe([personas[0]], "09:00")));
 
     await usuario.click(screen.getByRole("link", { name: "Ana" }));
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
+    await opcionDePerfil(usuario, "Editar información");
     await usuario.click(within(screen.getByRole("group", { name: "Fecha 1" })).getByRole("button", { name: "Quitar fecha" }));
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(notificador.programadas).toEqual(avisosDe(leer("personas.json"), "09:00")));
@@ -128,7 +128,7 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     await notificador.programar(avisosDe(personas, "09:00"));
     const { usuario } = await montar({ personas, notificador, ruta: "/persona/p1" });
 
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
+    await opcionDePerfil(usuario, "Editar información");
     const dia = within(screen.getByRole("group", { name: "Fecha 1" })).getByLabelText("Día");
     await usuario.clear(dia);
     await usuario.type(dia, "20");
@@ -161,14 +161,13 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     const notificador = new NotificadorSimulado("preguntar", "denegado");
     const { usuario, leer } = await montar({ notificador, ruta: "/persona/nueva" });
 
-    await usuario.type(screen.getByLabelText("Nombre"), "Ana");
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
+    await usuario.type(screen.getByLabelText("Nombre completo"), "Ana");
     const fecha = screen.getByRole("group", { name: "Fecha 1" });
     await usuario.type(within(fecha).getByLabelText("Día"), "14");
-    await usuario.type(within(fecha).getByLabelText("Mes"), "3");
+    await elegirMes(usuario, fecha, "Marzo");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(AVISO_SIN_PERMISO);
+    expect(await screen.findByRole("status", { name: "Aviso de notificaciones" })).toHaveTextContent(AVISO_SIN_PERMISO);
     // La navegación al detalle puede llegar después del aviso: se espera a que aparezca.
     expect(await screen.findByRole("heading", { name: "Ana" })).toBeInTheDocument();
     expect(leer("personas.json")).toHaveLength(1);
@@ -177,17 +176,17 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
 
     // Se cierra el aviso y la app sigue: otra fecha se guarda y el aviso no vuelve a salir.
     await usuario.click(screen.getByRole("button", { name: "Cerrar aviso de notificaciones" }));
-    await usuario.click(screen.getByRole("button", { name: "Editar" }));
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
+    await opcionDePerfil(usuario, "Editar información");
+    await usuario.click(screen.getByRole("button", { name: "Añadir otra fecha" }));
     const otra = screen.getByRole("group", { name: "Fecha 2" });
     await usuario.type(within(otra).getByLabelText("Día"), "1");
-    await usuario.type(within(otra).getByLabelText("Mes"), "5");
+    await elegirMes(usuario, otra, "Mayo");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     await screen.findByRole("heading", { name: "Ana" });
     await waitFor(() => expect(leer("personas.json")[0].fechas).toHaveLength(2));
     // Deja que termine la sincronización antes de comprobar que no hay aviso.
     await new Promise((r) => setTimeout(r, 20));
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(avisoNotificaciones()).not.toBeInTheDocument();
     expect(notificador.pedidos).toBe(1);
   });
 
@@ -231,15 +230,14 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
         <RouterProvider router={router} />
       </ProveedorApp>,
     );
-    await usuario.type(await screen.findByLabelText("Nombre"), "Ana");
-    await usuario.click(screen.getByRole("button", { name: "Añadir fecha" }));
+    await usuario.type(await screen.findByLabelText("Nombre completo"), "Ana");
     const fecha = screen.getByRole("group", { name: "Fecha 1" });
     await usuario.type(within(fecha).getByLabelText("Día"), "14");
-    await usuario.type(within(fecha).getByLabelText("Mes"), "3");
+    await elegirMes(usuario, fecha, "Marzo");
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
     await screen.findByRole("heading", { name: "Ana" });
     await new Promise((r) => setTimeout(r, 20));
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(avisoNotificaciones()).not.toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

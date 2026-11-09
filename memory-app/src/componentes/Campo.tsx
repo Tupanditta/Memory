@@ -4,6 +4,12 @@ import Icono, { type NombreIcono } from "./Icono";
 
 export type VarianteCampo = "suave" | "blanco" | "pildora";
 
+/**
+ * Etiqueta fuera del campo en los formularios de persona y de casa: `label-lg`, el mismo
+ * tamaño en los dos (petición del usuario, 2026-11-09).
+ */
+export const ETIQUETA_FORMULARIO = "text-label-lg text-on-surface-variant";
+
 type AtributosEntrada = Omit<InputHTMLAttributes<HTMLInputElement>, "className"> & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className" | "onChange">;
 
 interface Props extends AtributosEntrada {
@@ -15,18 +21,34 @@ interface Props extends AtributosEntrada {
   error?: string | null;
   /** Rótulo a la derecha de la etiqueta. */
   rotulo?: "Obligatorio" | "Opcional";
+  /** Asterisco `primary` tras la etiqueta (campo obligatorio). */
+  asterisco?: boolean;
+  /** Icono de 16 px `secondary` delante de la etiqueta. */
+  iconoEtiqueta?: NombreIcono;
+  /** Estilo de la etiqueta; por defecto `label-sm` `on-surface-variant`. */
+  claseEtiqueta?: string;
   multilinea?: boolean;
   /** Clases del contenedor (p. ej. `col-span-2`). */
   className?: string;
+  /** Relleno de la entrada en lugar del de la variante (p. ej. `px-4 py-3.5`). */
+  claseRelleno?: string;
+  /** Letra de la entrada en lugar de `body-md` (p. ej. `text-label-lg`). */
+  claseTexto?: string;
   /** Clases extra de la entrada (p. ej. `text-center`). */
   claseEntrada?: string;
   onChange?: InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>["onChange"];
 }
 
-const ENTRADA: Record<VarianteCampo, string> = {
-  suave: "rounded bg-surface-container-low px-4 py-3 text-body-md",
-  blanco: "h-14 rounded bg-surface-container-lowest px-4 text-body-md shadow-sm",
-  pildora: "h-12 rounded-xl bg-surface-container-low px-3.5 text-body-md",
+const FORMA: Record<VarianteCampo, string> = {
+  suave: "rounded bg-surface-container-low",
+  blanco: "h-14 rounded bg-surface-container-lowest shadow-sm",
+  pildora: "h-12 rounded-xl bg-surface-container-low",
+};
+
+const RELLENO: Record<VarianteCampo, string> = {
+  suave: "px-4 py-3",
+  blanco: "px-4",
+  pildora: "px-3.5",
 };
 
 export default function Campo({
@@ -35,8 +57,13 @@ export default function Campo({
   icono,
   error,
   rotulo,
+  asterisco = false,
+  iconoEtiqueta,
+  claseEtiqueta = "text-label-sm text-on-surface-variant",
   multilinea = false,
   className = "",
+  claseRelleno,
+  claseTexto = "text-body-md",
   claseEntrada = "",
   id,
   ...resto
@@ -49,8 +76,10 @@ export default function Campo({
 
   const clases = [
     "w-full text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary-container",
-    ENTRADA[variante],
-    multilinea ? "h-auto min-h-24 py-3" : "",
+    FORMA[variante],
+    claseRelleno ?? (multilinea ? "p-4" : RELLENO[variante]),
+    claseTexto,
+    multilinea ? "h-auto min-h-24 resize-none" : "",
     icono ? (variante === "blanco" ? "pl-12" : "pl-11") : "",
     invalido ? "ring-2 ring-error" : "",
     claseEntrada,
@@ -68,10 +97,18 @@ export default function Campo({
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
       {conEtiqueta && (
-        <div className="flex items-center justify-between gap-2 px-1">
-          <label htmlFor={idEntrada} className="text-label-sm text-on-surface-variant">
-            {etiqueta}
-          </label>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1">
+            {iconoEtiqueta && <Icono nombre={iconoEtiqueta} tamano={16} className="text-secondary" />}
+            <label htmlFor={idEntrada} className={claseEtiqueta}>
+              {etiqueta}
+            </label>
+            {asterisco && (
+              <span aria-hidden="true" className="font-bold text-primary">
+                *
+              </span>
+            )}
+          </div>
           {rotulo && <span className="text-label-sm text-outline">{rotulo}</span>}
         </div>
       )}
@@ -86,7 +123,7 @@ export default function Campo({
         )}
       </div>
       {error && (
-        <p id={idError} className="px-1 text-label-sm text-error">
+        <p id={idError} role="alert" className="px-1 text-label-sm text-error">
           {error}
         </p>
       )}

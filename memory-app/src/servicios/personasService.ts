@@ -27,7 +27,11 @@ const recortar = (texto: unknown) => (typeof texto === "string" ? texto.trim() :
 export class PersonasService {
   constructor(private readonly tienda: Tienda) {}
 
-  async crear(datos: DatosPersona): Promise<Resultado<Persona>> {
+  /**
+   * Crea la persona. Si recibe `casasIds`, la añade a esas casas en el mismo
+   * guardado (RNF8); un id de casa inexistente rechaza la operación (RNF10).
+   */
+  async crear(datos: DatosPersona, casasIds?: readonly string[]): Promise<Resultado<Persona>> {
     const persona = {
       id: nuevoId(),
       nombre: recortar(datos.nombre),
@@ -37,12 +41,19 @@ export class PersonasService {
     } as Persona;
     const validacion = validarPersona(persona);
     if (!validacion.ok) return fallo(validacion.error);
-    const resultado = await this.tienda.aplicar({ personas: [...this.tienda.datos.personas, persona] });
+    const casas = this.casasConMiembro(persona.id, casasIds);
+    if (!casas.ok) return casas;
+    const personas = [...this.tienda.datos.personas, persona];
+    const resultado = await this.tienda.aplicar(casas.valor ? { personas, casas: casas.valor } : { personas });
     return resultado.ok ? { ok: true, valor: persona } : fallo(resultado.error);
   }
 
-  /** Cambia solo los campos indicados (CU2). */
-  async editar(id: string, cambios: CambiosPersona): Promise<Resultado<Persona>> {
+  /**
+   * Cambia solo los campos indicados (CU2). Si recibe `casasIds`, deja a la persona
+   * exactamente en esas casas en el mismo guardado (RNF8): la añade a las nuevas, la
+   * quita de las demás y borra las que se quedan vacías (la interfaz lo confirma antes, RF7b).
+   */
+  async editar(id: string, cambios: CambiosPersona, casasIds?: readonly string[]): Promise<Resultado<Persona>> {
     const actual = this.porId(id);
     if (!actual) return fallo("La persona no existe");
     const editada = {
@@ -52,7 +63,14 @@ export class PersonasService {
       ...(cambios.direccion !== undefined ? { direccion: { ...actual.direccion, ...cambios.direccion } } : {}),
       ...(cambios.fechas !== undefined ? { fechas: cambios.fechas.map((f) => ({ ...f })) } : {}),
     } as Persona;
-    return this.reemplazar(editada);
+    if (casasIds === undefined) return this.reemplazar(editada);
+    const validacion = validarPersona(editada);
+    if (!validacion.ok) return fallo(validacion.error);
+    const casas = this.casasConMiembro(id, casasIds);
+    if (!casas.ok) return casas;
+    const personas = this.tienda.datos.personas.map((p) => (p.id === id ? editada : p));
+    const resultado = await this.tienda.aplicar(casas.valor ? { personas, casas: casas.valor } : { personas });
+    return resultado.ok ? { ok: true, valor: editada } : fallo(resultado.error);
   }
 
   /**
@@ -110,6 +128,28 @@ export class PersonasService {
 
   private porId(id: string): Persona | undefined {
     return this.tienda.datos.personas.find((p) => p.id === id);
+  }
+
+  /**
+   * Casas resultantes de dejar a `personaId` exactamente en `casasIds`: se añade a
+   * las que faltan, se quita de las demás y se descartan las que quedan vacías.
+   * `valor` es `null` si no hay que tocar `casas.json`. Rechaza ids inexistentes (RNF10).
+   */
+  private casasConMiembro(personaId: string, casasIds: readonly string[] | undefined): Resultado<Casa[] | null> {
+    if (casasIds === undefined) return { ok: true, valor: null };
+    const { casas } = this.tienda.datos;
+    const elegidas = new Set(casasIds);
+    if ([...elegidas].some((cid) => !casas.some((c) => c.id === cid))) return fallo("Alguna casa no existe");
+    let cambia = false;
+    const nuevas = casas
+      .map((casa) => {
+        const esta = casa.personas.includes(personaId);
+        if (elegidas.has(casa.id) === esta) return casa;
+        cambia = true;
+        return { ...casa, personas: esta ? casa.personas.filter((p) => p !== personaId) : [...casa.personas, personaId] };
+      })
+      .filter((casa) => casa.personas.length > 0);
+    return { ok: true, valor: cambia ? nuevas : null };
   }
 
   private async reemplazar(persona: Persona): Promise<Resultado<Persona>> {

@@ -7,13 +7,15 @@ interface Props {
   colorIcono?: string;
   titulo: string;
   contador?: string;
+  /** `id` del título, para nombrar la sección (`aria-labelledby`). */
+  id?: string;
 }
 
-export default function CabeceraSeccion({ icono, colorIcono = "text-primary", titulo, contador }: Props) {
+export default function CabeceraSeccion({ icono, colorIcono = "text-primary", titulo, contador, id }: Props) {
   return (
     <div className="flex items-center justify-between px-1">
-      <h2 className="flex items-center gap-2 text-headline-sm text-on-surface">
-        <Icono nombre={icono} tamano={18} className={colorIcono} />
+      <h2 id={id} className="flex items-center gap-2 text-headline-sm text-on-surface">
+        <Icono nombre={icono} tamano={18} relleno className={colorIcono} />
         {titulo}
       </h2>
       {contador && <span className="text-label-sm text-outline">{contador}</span>}

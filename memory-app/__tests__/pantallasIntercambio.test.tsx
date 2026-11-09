@@ -1,6 +1,6 @@
 // Sprint 8: exportar e importar desde Ajustes (CU11, CU12), con el compartidor,
 // el selector de archivos y las notificaciones simulados.
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, test } from "vitest";
@@ -8,6 +8,7 @@ import { rutas } from "../src/App";
 import { ProveedorApp } from "../src/estado/contexto";
 import { direccionVacia, type Casa, type Persona } from "../src/modelos/tipos";
 import type { Compartidor, SelectorArchivo } from "../src/servicios/archivosExternos";
+import { titulosInicio } from "./ayudas";
 import { bancoArchivos } from "./simulados/almacenes";
 import { NotificadorSimulado } from "./simulados/notificador";
 
@@ -52,7 +53,8 @@ async function montar({ personas = [] as Persona[], casas = [] as Casa[] } = {})
 }
 
 const archivo = (personas: unknown[], casas: unknown[] = []) => JSON.stringify({ version: 1, exportadoEn: "2026-01-01T00:00:00.000Z", personas, casas });
-const nombresEnInicio = () => within(screen.getByRole("region", { name: "Personas" })).getAllByRole("link").map((a) => a.textContent);
+// Desde el Sprint 10 (regla 8), los nombres se leen del título de cada tarjeta de Inicio.
+const nombresEnInicio = () => titulosInicio("Personas");
 
 describe("Sprint 8: exportar e importar en Ajustes", () => {
   test("T8.1 el botón Exportar comparte un JSON con los datos actuales (RF11, CU11)", async () => {
