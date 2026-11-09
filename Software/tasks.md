@@ -248,34 +248,36 @@ Resultado: `npm run typecheck` sin errores; `npm test` 12 archivos, 137 tests pa
 ---
 
 #### Sprint 9. Base visual
-Estado: pendiente
+Estado: completo
 
 Rehace la capa visual según el prototipo ([design.md](design.md), sección "Interfaz"). No cambia datos, servicios ni repositorio.
 
 Tareas
-- [ ] Comprobar el punto de partida: existe `memory-app/`, `npm install` termina bien y `npm test` y `npm run typecheck` pasan con la suite de los sprints 0 a 8. Si `memory-app/` no existe o la suite falla, parar y preguntar.
-- [ ] `tailwind.config.ts` con todos los tokens de design.md (colores, tipografía, espacios, radios y sombras con nombre).
-- [ ] Cargar Material Symbols desde sus paquetes (`estilos.css`) y mantener el splash (`@capacitor/splash-screen`, fondo `#FAF8FF`) hasta tener fuentes y datos; iconos oscuros en la barra de estado y borde a borde con márgenes seguros.
-- [ ] `utilidades/presentacion.ts`: `saludo(hora)`, `colorAvatar(id)`, `textoMiembros(nombres)`, `signoZodiacal(dia, mes)`, `edad(fecha, hoy)`, `diasHasta(fecha, hoy)` y `etiquetaProximaFecha(fecha, hoy)` ("En 4 días", "Hoy", "Mañana").
-- [ ] Componentes de design.md: `Cabecera`, `BarraPestanas` (en las rutas de pestaña), `Tarjeta`, `Boton`, `Chip`, `Avatar`, `FilaAvatares`, `CabeceraSeccion`, `CabeceraTarjeta`, `CirculoDifuso`, `Campo`, `CamposDireccion`, `ChipSeleccion`, `FilaPersonaSeleccionable`, `HojaInferior`, `DialogoConfirmacion`, `BannerError`, `AvisoEmergente`, `EstadoVacio`, `Icono`.
-- [ ] Efecto de escala al pulsar (`active:scale-*`, 150 ms) y zona táctil mínima de 48 px; el botón atrás de Android (`@capacitor/app`) cierra hojas y diálogos y vuelve atrás.
-- [ ] Sustituir los componentes básicos de los sprints 5 a 8 (`componentes/ui.tsx`) por los nuevos; las pantallas existentes siguen funcionando con ellos (sin cambiar su contenido todavía).
+- [x] Comprobar el punto de partida: existe `memory-app/`, `npm install` termina bien y `npm test` y `npm run typecheck` pasan con la suite de los sprints 0 a 8. Si `memory-app/` no existe o la suite falla, parar y preguntar.
+- [x] `tailwind.config.ts` con todos los tokens de design.md (colores, tipografía, espacios, radios y sombras con nombre).
+- [x] Cargar Material Symbols desde sus paquetes (`estilos.css`) y mantener el splash (`@capacitor/splash-screen`, fondo `#FAF8FF`) hasta tener fuentes y datos; iconos oscuros en la barra de estado y borde a borde con márgenes seguros.
+- [x] `utilidades/presentacion.ts`: `saludo(hora)`, `colorAvatar(id)`, `textoMiembros(nombres)`, `signoZodiacal(dia, mes)`, `edad(fecha, hoy)`, `diasHasta(fecha, hoy)` y `etiquetaProximaFecha(fecha, hoy)` ("En 4 días", "Hoy", "Mañana").
+- [x] Componentes de design.md: `Cabecera`, `BarraPestanas` (en las rutas de pestaña), `Tarjeta`, `Boton`, `Chip`, `Avatar`, `FilaAvatares`, `CabeceraSeccion`, `CabeceraTarjeta`, `CirculoDifuso`, `Campo`, `CamposDireccion`, `ChipSeleccion`, `FilaPersonaSeleccionable`, `HojaInferior`, `DialogoConfirmacion`, `BannerError`, `AvisoEmergente`, `EstadoVacio`, `Icono`.
+- [x] Efecto de escala al pulsar (`active:scale-*`, 150 ms) y zona táctil mínima de 48 px; el botón atrás de Android (`@capacitor/app`) cierra hojas y diálogos y vuelve atrás.
+- [x] Sustituir los componentes básicos de los sprints 5 a 8 (no había `componentes/ui.tsx`: estaban escritos en cada pantalla y formulario) por los nuevos; las pantallas existentes siguen funcionando con ellos (sin cambiar su contenido todavía).
 
 Tests de validación
-- [ ] T9.0 La suite de los sprints 0 a 8 sigue pasando completa con los componentes nuevos (adaptando solo las búsquedas de texto, regla 8).
-- [ ] T9.1 Los colores, radios, espacios y tamaños de letra de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/`; `fontFamily` usa Lora y Playfair Display (desviación de design.md).
-- [ ] T9.2 Todos los nombres de icono usados existen en la lista del paquete `material-symbols`.
-- [ ] T9.3 `saludo`: 06:00 y 11:59 dan "Buenos días"; 12:00 y 20:59 "Buenas tardes"; 21:00 y 05:59 "Buenas noches".
-- [ ] T9.4 `colorAvatar` devuelve siempre el mismo color para el mismo `id` y una de las cinco parejas fondo/texto de la paleta de design.md.
-- [ ] T9.5 `textoMiembros`: con 1 o 2 nombres los muestra completos separados por coma; con 3 o más, los nombres de pila de los dos primeros y "y N más".
-- [ ] T9.6 `signoZodiacal` (tabla de design.md): 19/02 y 20/03 son Piscis, 21/03 y 19/04 Aries, 20/04 Tauro, 18/02 Acuario, 29/02 Piscis y 31/12 Capricornio.
-- [ ] T9.7 `edad`: con año calcula los años cumplidos hoy (antes y después del cumpleaños del año); sin año devuelve `null`.
-- [ ] T9.8 `etiquetaProximaFecha`: hoy da "Hoy", mañana "Mañana", cinco días "En 5 días"; `diasHasta` ≤ 7 se marca como cercana y 8 no. Formatos: "02 Jun", "14 de Marzo", "Sábado, 14 de Marzo"; contador "0 seleccionados", "1 seleccionado", "3 seleccionados".
-- [ ] T9.9 `BarraPestanas` muestra Inicio, Calendario y Ajustes, marca la activa y navega al pulsar otra.
-- [ ] T9.10 `HojaInferior` se abre y se cierra al pulsar fuera; `DialogoConfirmacion` llama a confirmar o a cancelar según el botón y a nada más.
-- [ ] T9.11 `Campo` muestra el mensaje de error y el rótulo "Obligatorio"/"Opcional"; `ChipSeleccion` alterna su estado y es accesible (`aria-pressed`).
-- [ ] T9.12 Mientras las fuentes o los datos no están cargados, la raíz no renderiza las pantallas y no oculta el splash (`SplashScreen.hide` no se llama); al cargar, sí.
-- [ ] T9.13 `npm run typecheck` y `npm test` pasan completos.
+- [x] T9.0 La suite de los sprints 0 a 8 sigue pasando completa con los componentes nuevos (adaptando solo las búsquedas de texto, regla 8).
+- [x] T9.1 Los colores, radios, espacios y tamaños de letra de `tailwind.config.ts` coinciden con el bloque `tailwind.config` de los `code.html` de `prototipo/`; `fontFamily` usa Lora y Playfair Display (desviación de design.md).
+- [x] T9.2 Todos los nombres de icono usados existen en la lista del paquete `material-symbols`.
+- [x] T9.3 `saludo`: 06:00 y 11:59 dan "Buenos días"; 12:00 y 20:59 "Buenas tardes"; 21:00 y 05:59 "Buenas noches".
+- [x] T9.4 `colorAvatar` devuelve siempre el mismo color para el mismo `id` y una de las cinco parejas fondo/texto de la paleta de design.md.
+- [x] T9.5 `textoMiembros`: con 1 o 2 nombres los muestra completos separados por coma; con 3 o más, los nombres de pila de los dos primeros y "y N más".
+- [x] T9.6 `signoZodiacal` (tabla de design.md): 19/02 y 20/03 son Piscis, 21/03 y 19/04 Aries, 20/04 Tauro, 18/02 Acuario, 29/02 Piscis y 31/12 Capricornio.
+- [x] T9.7 `edad`: con año calcula los años cumplidos hoy (antes y después del cumpleaños del año); sin año devuelve `null`.
+- [x] T9.8 `etiquetaProximaFecha`: hoy da "Hoy", mañana "Mañana", cinco días "En 5 días"; `diasHasta` ≤ 7 se marca como cercana y 8 no. Formatos: "02 Jun", "14 de Marzo", "Sábado, 14 de Marzo"; contador "0 seleccionados", "1 seleccionado", "3 seleccionados".
+- [x] T9.9 `BarraPestanas` muestra Inicio, Calendario y Ajustes, marca la activa y navega al pulsar otra.
+- [x] T9.10 `HojaInferior` se abre y se cierra al pulsar fuera; `DialogoConfirmacion` llama a confirmar o a cancelar según el botón y a nada más.
+- [x] T9.11 `Campo` muestra el mensaje de error y el rótulo "Obligatorio"/"Opcional"; `ChipSeleccion` alterna su estado y es accesible (`aria-pressed`).
+- [x] T9.12 Mientras las fuentes o los datos no están cargados, la raíz no renderiza las pantallas y no oculta el splash (`SplashScreen.hide` no se llama); al cargar, sí.
+- [x] T9.13 `npm run typecheck` y `npm test` pasan completos.
+
+Resultado: `npm run typecheck` sin errores; `npm test` 17 archivos, 163 tests pasan (137 de los sprints 0 a 8 y 26 nuevos: `tema.test.ts` (T9.1: colores, radios, espacios y tamaños de letra iguales en los seis `code.html`, sombras con nombre y fuentes), `iconos.test.ts` (T9.2), `presentacion.test.ts` (T9.3 a T9.8), `componentes.test.tsx` (T9.9 a T9.11, más campo en píldora y pila del botón atrás) y `arranque.test.tsx` (T9.12: sin fuentes, sin datos y con fallo de carga)); suite completa ejecutada 8 veces seguidas sin fallos; `npm run build` genera `dist/` con la fuente de iconos empaquetada y `npx cap sync android` termina bien. Se comprobó que T9.12 falla si `ProveedorApp` no espera a las fuentes. Adaptaciones de tests anteriores (regla 8; la comprobación no cambia): el botón atrás de la cabecera es un botón, así que T5.2, T5.5 y T6.1 buscan `button` "Volver" en vez de `link`; T7.6 espera con `findByRole` a que aparezca el detalle de la persona, porque ahora el aviso puede salir antes que la navegación (falló 2 veces de 9 ejecuciones). Código nuevo: `utilidades/presentacion.ts`, `estado/arranque.ts`, `componentes/atras.ts` y los componentes `Cabecera`, `BarraPestanas`, `Pantalla`, `Tarjeta`, `Boton`, `Chip`, `Avatar`, `FilaAvatares`, `CabeceraSeccion`, `CabeceraTarjeta`, `CirculoDifuso`, `Campo`, `ChipSeleccion`, `FilaPersonaSeleccionable`, `HojaInferior`, `DialogoConfirmacion`, `AvisoEmergente`, `EstadoVacio` e `Icono`; se rehacen `CamposDireccion`, `BannerError` y `BannerAviso`. Las pantallas usan ya la cabecera, la barra, las tarjetas, los botones, los campos y los diálogos nuevos con el mismo contenido; el selector de tipo de fecha y la lista de miembros de una casa siguen siendo controles nativos hasta los sprints 10 y 11. `capacitor.config.ts` tiene `launchAutoHide: false`. El aspecto se comprueba en la vista previa web y en el móvil (T13).
 
 ---
 

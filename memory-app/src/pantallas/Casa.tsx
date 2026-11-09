@@ -3,14 +3,16 @@
 // miembro pide confirmación: aceptar borra la casa, cancelar no cambia nada (RF7b).
 import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { useCierreAtras } from "../componentes/atras";
+import Boton from "../componentes/Boton";
+import Cabecera from "../componentes/Cabecera";
 import { ETIQUETAS_DIRECCION } from "../componentes/CamposDireccion";
+import DialogoConfirmacion from "../componentes/DialogoConfirmacion";
 import FormularioCasa, { type ValoresCasa } from "../componentes/FormularioCasa";
+import Pantalla from "../componentes/Pantalla";
+import Tarjeta from "../componentes/Tarjeta";
 import { useApp } from "../estado/contexto";
 import { CAMPOS_DIRECCION, type Persona } from "../modelos/tipos";
-
-const claseBotonPrincipal = "rounded-full bg-primary px-space-lg py-space-sm text-label-lg text-on-primary";
-const claseBotonPeligro = "rounded-full bg-error px-space-lg py-space-sm text-label-lg text-on-error";
-const claseBotonNeutro = "rounded-full bg-surface-container-low px-space-lg py-space-sm text-label-lg text-on-surface-variant";
 
 export default function Casa() {
   const { id = "nueva" } = useParams();
@@ -22,6 +24,8 @@ export default function Casa() {
   const [ultimoMiembro, setUltimoMiembro] = useState<Persona | null>(null);
   /** Tras borrar con éxito, la navegación a Inicio llega después que los datos: no se pinta "no existe". */
   const saliendo = useRef(false);
+  // Atrás durante la edición la cancela.
+  useCierreAtras(editando, () => setEditando(false));
 
   const volver = () => navegar("/");
 
@@ -32,10 +36,12 @@ export default function Casa() {
       return r.ok;
     };
     return (
-      <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
-        <h1 className="text-headline-md text-on-surface">Nueva casa</h1>
-        <FormularioCasa personas={datos.personas} onGuardar={crear} onCancelar={volver} />
-      </main>
+      <>
+        <Cabecera titulo="Nueva casa" />
+        <Pantalla tipo="pila">
+          <FormularioCasa personas={datos.personas} onGuardar={crear} onCancelar={volver} />
+        </Pantalla>
+      </>
     );
   }
 
@@ -43,12 +49,15 @@ export default function Casa() {
   if (!casa) {
     if (saliendo.current) return null;
     return (
-      <main className="flex flex-col gap-space-md bg-surface px-margin py-space-lg">
-        <p className="text-body-md text-on-surface-variant">Esta casa no existe</p>
-        <Link to="/" className="text-label-lg text-primary">
-          Volver
-        </Link>
-      </main>
+      <>
+        <Cabecera titulo="Casa" />
+        <Pantalla tipo="pila">
+          <p className="text-body-md text-on-surface-variant">Esta casa no existe</p>
+          <Link to="/" className="text-label-lg text-primary">
+            Volver
+          </Link>
+        </Pantalla>
+      </>
     );
   }
 
@@ -59,10 +68,12 @@ export default function Casa() {
       return r.ok;
     };
     return (
-      <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
-        <h1 className="text-headline-md text-on-surface">Editar casa</h1>
-        <FormularioCasa inicial={casa} personas={datos.personas} onGuardar={guardar} onCancelar={() => setEditando(false)} />
-      </main>
+      <>
+        <Cabecera titulo="Editar casa" onAtras={() => setEditando(false)} />
+        <Pantalla tipo="pila">
+          <FormularioCasa inicial={casa} personas={datos.personas} onGuardar={guardar} onCancelar={() => setEditando(false)} />
+        </Pantalla>
+      </>
     );
   }
 
@@ -101,92 +112,88 @@ export default function Casa() {
   };
 
   return (
-    <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
-      <Link to="/" aria-label="Volver" className="text-label-lg text-primary">
-        ← Volver
-      </Link>
-      <header className="flex flex-col gap-space-xs">
-        <h1 className="text-headline-md text-on-surface">{casa.apodo}</h1>
+    <>
+      <Cabecera titulo={casa.apodo} />
+      <Pantalla tipo="pila">
         <p className="text-body-sm text-on-surface-variant">{miembros.length === 1 ? "1 miembro" : `${miembros.length} miembros`}</p>
-      </header>
 
-      <section aria-label="Dirección" className="flex flex-col gap-space-xs">
-        <h2 className="text-label-lg text-on-surface">Dirección</h2>
-        {camposDireccion.length === 0 ? (
-          <p className="text-body-md text-outline">Sin dirección</p>
-        ) : (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-space-md gap-y-space-xs text-body-md">
-            {camposDireccion.map((campo) => (
-              <div key={campo} className="contents">
-                <dt className="text-on-surface-variant">{ETIQUETAS_DIRECCION[campo]}</dt>
-                <dd className="text-on-surface">{casa.direccion[campo]}</dd>
-              </div>
+        <Tarjeta elemento="section" aria-label="Dirección" className="flex flex-col gap-2">
+          <h2 className="text-label-lg text-on-surface">Dirección</h2>
+          {camposDireccion.length === 0 ? (
+            <p className="text-body-md text-outline">Sin dirección</p>
+          ) : (
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-body-md">
+              {camposDireccion.map((campo) => (
+                <div key={campo} className="contents">
+                  <dt className="text-on-surface-variant">{ETIQUETAS_DIRECCION[campo]}</dt>
+                  <dd className="text-on-surface">{casa.direccion[campo]}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </Tarjeta>
+
+        <Tarjeta elemento="section" aria-label="Miembros" className="flex flex-col gap-2">
+          <h2 className="text-label-lg text-on-surface">¿Quiénes viven aquí?</h2>
+          <ul className="flex flex-col gap-2">
+            {miembros.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-2 rounded bg-surface-container-low p-4">
+                <Link to={`/persona/${p.id}`} className="text-label-lg text-on-surface">
+                  {p.nombre}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => quitar(p)}
+                  aria-label={`Quitar a ${p.nombre}`}
+                  className="zona-tactil rounded-full bg-error-container/40 px-3 py-1 text-label-sm text-error active:scale-95"
+                >
+                  Quitar
+                </button>
+              </li>
             ))}
-          </dl>
-        )}
-      </section>
+          </ul>
+        </Tarjeta>
 
-      <section aria-label="Miembros" className="flex flex-col gap-space-xs">
-        <h2 className="text-label-lg text-on-surface">¿Quiénes viven aquí?</h2>
-        <ul className="flex flex-col gap-space-sm">
-          {miembros.map((p) => (
-            <li key={p.id} className="flex items-center justify-between gap-space-sm rounded bg-surface-container-lowest p-space-md shadow-sm">
-              <Link to={`/persona/${p.id}`} className="text-label-lg text-on-surface">
-                {p.nombre}
-              </Link>
-              <button
-                type="button"
-                onClick={() => quitar(p)}
-                aria-label={`Quitar a ${p.nombre}`}
-                className="rounded-full bg-error-container/40 px-space-sm py-space-xs text-label-sm text-error"
-              >
-                Quitar
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {ultimoMiembro && (
-        <div role="alertdialog" aria-label="Confirmar quitar último miembro" className="flex flex-col gap-space-sm rounded bg-error-container p-space-md text-on-error-container">
-          <p className="text-body-md">
-            {ultimoMiembro.nombre} es la última persona de {casa.apodo}. Una casa no puede quedarse vacía: si la quitas, se borrará la casa.
-          </p>
-          <div className="flex gap-space-sm">
-            <button type="button" onClick={confirmarQuitarUltimo} className={claseBotonPeligro}>
-              Borrar casa
-            </button>
-            <button type="button" onClick={() => setUltimoMiembro(null)} className={claseBotonNeutro}>
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {confirmandoBorrado ? (
-        <div role="alertdialog" aria-label="Confirmar borrado" className="flex flex-col gap-space-sm rounded bg-error-container p-space-md text-on-error-container">
-          <p className="text-body-md">¿Borrar {casa.apodo}? Sus personas no se borran.</p>
-          <div className="flex gap-space-sm">
-            <button type="button" onClick={borrar} className={claseBotonPeligro}>
-              Confirmar borrado
-            </button>
-            <button type="button" onClick={() => setConfirmandoBorrado(false)} className={claseBotonNeutro}>
-              Cancelar
-            </button>
-          </div>
-        </div>
-      ) : (
-        !ultimoMiembro && (
-          <div className="flex gap-space-sm">
-            <button type="button" onClick={() => setEditando(true)} className={claseBotonPrincipal}>
+        {!confirmandoBorrado && !ultimoMiembro && (
+          <div className="flex gap-2">
+            <Boton variante="primarioSuave" icono="edit" onClick={() => setEditando(true)} className="flex-1">
               Editar
-            </button>
-            <button type="button" onClick={() => setConfirmandoBorrado(true)} className="rounded-full bg-error-container px-space-lg py-space-sm text-label-lg text-on-error-container">
+            </Boton>
+            <Boton variante="opcionHojaPeligro" icono="delete" onClick={() => setConfirmandoBorrado(true)} className="flex-1 !w-auto !justify-center !rounded-full">
               Borrar
-            </button>
+            </Boton>
           </div>
-        )
-      )}
-    </main>
+        )}
+
+        <DialogoConfirmacion
+          abierta={ultimoMiembro !== null}
+          titulo="Quitar al último miembro"
+          etiqueta="Confirmar quitar último miembro"
+          textoConfirmar="Borrar casa"
+          iconoConfirmar="delete"
+          peligro
+          onConfirmar={confirmarQuitarUltimo}
+          onCancelar={() => setUltimoMiembro(null)}
+        >
+          {ultimoMiembro && (
+            <p>
+              {ultimoMiembro.nombre} es la última persona de {casa.apodo}. Una casa no puede quedarse vacía: si la quitas, se borrará la casa.
+            </p>
+          )}
+        </DialogoConfirmacion>
+
+        <DialogoConfirmacion
+          abierta={confirmandoBorrado}
+          titulo="Confirmar borrado"
+          textoConfirmar="Confirmar borrado"
+          iconoConfirmar="delete"
+          peligro
+          onConfirmar={borrar}
+          onCancelar={() => setConfirmandoBorrado(false)}
+        >
+          <p>¿Borrar {casa.apodo}? Sus personas no se borran.</p>
+        </DialogoConfirmacion>
+      </Pantalla>
+    </>
   );
 }

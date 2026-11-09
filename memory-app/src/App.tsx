@@ -1,6 +1,9 @@
-import { createHashRouter, NavLink, Outlet, RouterProvider, type RouteObject } from "react-router";
-import BannerAviso from "./componentes/BannerAviso";
-import BannerError from "./componentes/BannerError";
+import { useEffect, useRef } from "react";
+import { App as AppCapacitor } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
+import { createHashRouter, Outlet, RouterProvider, useLocation, useNavigate, type RouteObject } from "react-router";
+import { cerrarUltimo } from "./componentes/atras";
+import BarraPestanas, { PESTANAS } from "./componentes/BarraPestanas";
 import { ProveedorApp, type Externos } from "./estado/contexto";
 import Ajustes from "./pantallas/Ajustes";
 import Calendario from "./pantallas/Calendario";
@@ -8,49 +11,43 @@ import Inicio from "./pantallas/Inicio";
 import Casa from "./pantallas/Casa";
 import Persona from "./pantallas/Persona";
 
-/** Marco común: los avisos van encima de todas las pantallas. */
-function Marco() {
-  return (
-    <>
-      <BannerError />
-      <BannerAviso />
-      <Outlet />
-    </>
-  );
+/**
+ * Botón atrás de Android: cierra la hoja, el diálogo o la edición abierta; si no hay,
+ * vuelve a la pantalla anterior; en una pestaña raíz, sale de la app.
+ */
+function useBotonAtrasAndroid() {
+  const navegar = useNavigate();
+  const ubicacion = useLocation();
+  const actual = useRef(ubicacion);
+  actual.current = ubicacion;
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const escucha = AppCapacitor.addListener("backButton", () => {
+      if (cerrarUltimo()) return;
+      const { pathname, key } = actual.current;
+      if (PESTANAS.some((p) => p.ruta === pathname)) void AppCapacitor.exitApp();
+      else if (key === "default") navegar("/");
+      else navegar(-1);
+    });
+    return () => {
+      void escucha.then((e) => e.remove());
+    };
+  }, [navegar]);
 }
 
-const PESTANAS = [
-  { ruta: "/", nombre: "Inicio" },
-  { ruta: "/calendario", nombre: "Calendario" },
-  { ruta: "/ajustes", nombre: "Ajustes" },
-];
+/** Marco común de todas las pantallas. */
+function Marco() {
+  useBotonAtrasAndroid();
+  return <Outlet />;
+}
 
-/**
- * Pantallas de pestaña con su barra (versión básica; el Sprint 9 le da el diseño del prototipo).
- * La barra flota sobre el margen seguro inferior, separada del borde; el contenido deja
- * hueco debajo para que la barra no lo tape.
- */
+/** Pantallas de pestaña con su barra. */
 function ConPestanas() {
   return (
     <>
-      <div className="pb-[calc(var(--margen-seguro-inf)+6.5rem)]">
-        <Outlet />
-      </div>
-      <nav
-        aria-label="Pestañas"
-        className="fixed inset-x-margin bottom-[calc(var(--margen-seguro-inf)+1.5rem)] mx-auto flex max-w-sm justify-around rounded-full bg-surface-container-lowest px-space-sm py-space-sm shadow-lg"
-      >
-        {PESTANAS.map(({ ruta, nombre }) => (
-          <NavLink
-            key={ruta}
-            to={ruta}
-            end
-            className={({ isActive }) => `rounded-full px-space-md py-space-sm text-base font-bold ${isActive ? "bg-primary/10 text-primary" : "text-on-surface-variant"}`}
-          >
-            {nombre}
-          </NavLink>
-        ))}
-      </nav>
+      <Outlet />
+      <BarraPestanas />
     </>
   );
 }

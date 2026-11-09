@@ -6,8 +6,8 @@ const config: CapacitorConfig = {
   webDir: "dist",
   plugins: {
     SplashScreen: {
-      // El splash se oculta cuando hay fuentes y datos (Sprint 9).
-      launchAutoHide: true,
+      // El splash se oculta desde la app cuando hay fuentes y datos (`SplashScreen.hide`).
+      launchAutoHide: false,
       backgroundColor: "#FAF8FF",
     },
   },

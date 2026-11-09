@@ -1,3 +1,6 @@
+/* Iconos Material Symbols Outlined, empaquetados (sin red, RNF2). */
+@import "material-symbols/outlined.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,6 +18,7 @@
   /* Tipografía: Lora para el texto y Playfair Display para los títulos (empaquetadas, sin red). */
   html {
     font-family: "Lora", Georgia, serif;
+    -webkit-tap-highlight-color: transparent;
   }
   h1,
   h2,
@@ -22,8 +26,93 @@
     font-family: "Playfair Display", Georgia, serif;
   }
 
+  html,
+  body {
+    background-color: #faf8ff;
+  }
+  body {
+    overscroll-behavior: none;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   /* El bloque superior empieza bajo la barra de estado, con algo de aire. */
   #raiz {
     padding-top: calc(var(--margen-seguro-sup) + 1rem);
+  }
+
+  /* Pulsación (design.md, "Pulsación"): todo lo pulsable reduce su escala al pulsar. */
+  button,
+  a {
+    @apply transition-transform duration-150;
+  }
+}
+
+@layer components {
+  /* Icono relleno (`font-variation-settings: 'FILL' 1` del prototipo). */
+  .icono-relleno {
+    font-variation-settings: "FILL" 1;
+  }
+
+  /* Zona táctil mínima de 48 × 48 px para elementos visibles más pequeños. */
+  .zona-tactil {
+    position: relative;
+  }
+  .zona-tactil::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 48px);
+    height: max(100%, 48px);
+    transform: translate(-50%, -50%);
+  }
+
+  /* Cabecera y barra de pestañas translúcidas, con respaldo si no hay `backdrop-filter`. */
+  .fondo-cabecera {
+    background-color: rgba(250, 248, 255, 0.92);
+  }
+  .fondo-barra {
+    background-color: rgba(255, 255, 255, 0.92);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .fondo-cabecera {
+      @apply bg-surface/80 backdrop-blur-xl;
+    }
+    .fondo-barra {
+      @apply bg-surface-container-lowest/85 backdrop-blur;
+    }
+  }
+
+  /* Entrada de las hojas inferiores: desde abajo con fundido (200 ms). */
+  .entrada-capa {
+    animation: entrada-capa 200ms ease-out;
+  }
+  .entrada-hoja {
+    animation: entrada-hoja 200ms ease-out;
+  }
+
+  /* Aviso emergente: aparece con fundido y desplazamiento. */
+  .entrada-aviso {
+    animation: entrada-aviso 200ms ease-out;
+  }
+}
+
+@keyframes entrada-capa {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes entrada-hoja {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+@keyframes entrada-aviso {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
 }

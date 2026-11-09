@@ -93,7 +93,7 @@ describe("Sprint 5: estado y pantallas de personas", () => {
     });
     expect(router.state.location.pathname).toBe(`/persona/${guardadas[0].id}`);
 
-    await usuario.click(screen.getByRole("link", { name: "Volver" }));
+    await usuario.click(screen.getByRole("button", { name: "Volver" }));
     expect(nombresEnLista()).toEqual(["José Pérez (Pepe)Calle Mayor"]);
   });
 
@@ -181,7 +181,7 @@ describe("Sprint 5: estado y pantallas de personas", () => {
       persona("p1", "Ana María", { direccion: { ...direccionVacia(), ciudad: "Sevilla" } }),
       persona("p2", "Bruno"),
     ]);
-    await usuario.click(screen.getByRole("link", { name: "Volver" }));
+    await usuario.click(screen.getByRole("button", { name: "Volver" }));
     expect(nombresEnLista()).toEqual(["Ana MaríaSevilla", "Bruno"]);
   });
 

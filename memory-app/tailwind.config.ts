@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
 // Tokens del prototipo: bloque `tailwind.config` de Software/prototipo/*/code.html,
-// copiado sin cambios (ver design.md, "Tokens"). Las sombras con nombre se añaden en el Sprint 9.
-const prototipo: NonNullable<Config["theme"]>["extend"] = {
+// copiado sin cambios (ver design.md, "Tokens"). Solo se añaden las sombras con nombre.
+export const prototipo: NonNullable<Config["theme"]>["extend"] = {
   "colors": {
     "on-error": "#ffffff",
     "on-primary-fixed-variant": "#0f3bad",
@@ -166,7 +166,19 @@ const prototipo: NonNullable<Config["theme"]>["extend"] = {
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
-    extend: prototipo,
+    extend: {
+      ...prototipo,
+      // Sombras con nombre (design.md, "Sombras"): valores propios del prototipo.
+      boxShadow: {
+        tarjeta: "0 8px 24px -4px rgba(107,138,253,0.08)",
+        buscador: "0 8px 24px -4px rgba(107,138,253,0.10)",
+        "buscador-foco": "0 8px 28px -2px rgba(107,138,253,0.18)",
+        barra: "0 8px 24px -4px rgba(107,138,253,0.15)",
+        "boton-azul": "0 4px 16px -2px rgba(107,138,253,0.14)",
+        "boton-lila": "0 4px 16px -2px rgba(155,134,237,0.14)",
+        cabecera: "0 1px 8px 0 rgba(0,0,0,0.03)",
+      },
+    },
   },
   plugins: [],
 } satisfies Config;

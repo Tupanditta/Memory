@@ -2,6 +2,8 @@
 import { useState, type FormEvent } from "react";
 import { direccionVacia, TIPOS_FECHA, type Direccion, type Fecha, type Persona, type TipoFecha } from "../modelos/tipos";
 import { validarFecha } from "../modelos/validadores";
+import Boton from "./Boton";
+import Campo from "./Campo";
 import CamposDireccion from "./CamposDireccion";
 
 export interface ValoresPersona {
@@ -45,8 +47,8 @@ interface Props {
   onCancelar(): void;
 }
 
-const claseCampo = "rounded border border-outline-variant bg-surface-container-lowest p-space-sm text-body-md text-on-surface";
-const claseEtiqueta = "flex flex-col gap-space-xs text-label-md text-on-surface-variant";
+const claseSelector =
+  "w-full rounded bg-surface-container-lowest px-4 py-3 text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container";
 
 export default function FormularioPersona({ inicial, onGuardar, onCancelar }: Props) {
   const [nombre, setNombre] = useState(inicial?.nombre ?? "");
@@ -83,25 +85,19 @@ export default function FormularioPersona({ inicial, onGuardar, onCancelar }: Pr
   }
 
   return (
-    <form onSubmit={enviar} noValidate className="flex flex-col gap-space-lg">
-      <label className={claseEtiqueta}>
-        Nombre
-        <input value={nombre} onChange={(e) => setNombre(e.target.value)} required aria-invalid={aviso === "Escribe el nombre"} className={claseCampo} />
-      </label>
-      <label className={claseEtiqueta}>
-        Apodo
-        <input value={apodo} onChange={(e) => setApodo(e.target.value)} className={claseCampo} />
-      </label>
+    <form onSubmit={enviar} noValidate className="flex flex-col gap-6">
+      <Campo etiqueta="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required aria-invalid={aviso === "Escribe el nombre"} />
+      <Campo etiqueta="Apodo" value={apodo} onChange={(e) => setApodo(e.target.value)} />
 
       <CamposDireccion valor={direccion} onChange={setDireccion} />
 
-      <fieldset className="flex flex-col gap-space-md">
-        <legend className="mb-space-sm text-label-lg text-on-surface">Fechas</legend>
+      <fieldset className="flex flex-col gap-4">
+        <legend className="mb-2 px-1 text-label-lg text-on-surface">Fechas</legend>
         {fechas.map((fecha, i) => (
-          <div key={i} role="group" aria-label={`Fecha ${i + 1}`} className="flex flex-col gap-space-sm rounded bg-surface-container-low p-space-md">
-            <label className={claseEtiqueta}>
+          <div key={i} role="group" aria-label={`Fecha ${i + 1}`} className="flex flex-col gap-2 rounded-lg bg-surface-container-low p-4">
+            <label className="flex flex-col gap-1.5 px-1 text-label-sm text-on-surface-variant">
               Tipo
-              <select value={fecha.tipo} onChange={(e) => cambiarFecha(i, { tipo: e.target.value as TipoFecha })} className={claseCampo}>
+              <select value={fecha.tipo} onChange={(e) => cambiarFecha(i, { tipo: e.target.value as TipoFecha })} className={claseSelector}>
                 {TIPOS_FECHA.map((tipo) => (
                   <option key={tipo} value={tipo}>
                     {ETIQUETA_TIPO[tipo]}
@@ -109,51 +105,40 @@ export default function FormularioPersona({ inicial, onGuardar, onCancelar }: Pr
                 ))}
               </select>
             </label>
-            <label className={claseEtiqueta}>
-              Etiqueta
-              <input value={fecha.etiqueta} onChange={(e) => cambiarFecha(i, { etiqueta: e.target.value })} className={claseCampo} />
-            </label>
-            <div className="grid grid-cols-3 gap-space-sm">
-              <label className={claseEtiqueta}>
-                Día
-                <input inputMode="numeric" value={fecha.dia} onChange={(e) => cambiarFecha(i, { dia: e.target.value })} className={claseCampo} />
-              </label>
-              <label className={claseEtiqueta}>
-                Mes
-                <input inputMode="numeric" value={fecha.mes} onChange={(e) => cambiarFecha(i, { mes: e.target.value })} className={claseCampo} />
-              </label>
-              <label className={claseEtiqueta}>
-                Año (opcional)
-                <input inputMode="numeric" value={fecha.anio} onChange={(e) => cambiarFecha(i, { anio: e.target.value })} className={claseCampo} />
-              </label>
+            <Campo etiqueta="Etiqueta" variante="blanco" value={fecha.etiqueta} onChange={(e) => cambiarFecha(i, { etiqueta: e.target.value })} />
+            <div className="grid grid-cols-3 gap-2">
+              <Campo etiqueta="Día" variante="blanco" inputMode="numeric" value={fecha.dia} onChange={(e) => cambiarFecha(i, { dia: e.target.value })} />
+              <Campo etiqueta="Mes" variante="blanco" inputMode="numeric" value={fecha.mes} onChange={(e) => cambiarFecha(i, { mes: e.target.value })} />
+              <Campo etiqueta="Año (opcional)" variante="blanco" inputMode="numeric" value={fecha.anio} onChange={(e) => cambiarFecha(i, { anio: e.target.value })} />
             </div>
-            <button type="button" onClick={() => setFechas((actuales) => actuales.filter((_, j) => j !== i))} className="self-start text-label-md text-error">
+            <Boton variante="texto" icono="delete" tamanoIcono={18} onClick={() => setFechas((actuales) => actuales.filter((_, j) => j !== i))} className="self-start !px-2 !text-error">
               Quitar fecha
-            </button>
+            </Boton>
           </div>
         ))}
-        <button
-          type="button"
+        <Boton
+          variante="azulSuave"
+          icono="add"
           onClick={() => setFechas((actuales) => [...actuales, { tipo: "cumpleaños", etiqueta: "", dia: "", mes: "", anio: "" }])}
-          className="self-start rounded-full bg-surface-container px-space-md py-space-sm text-label-lg text-primary"
+          className="self-start"
         >
           Añadir fecha
-        </button>
+        </Boton>
       </fieldset>
 
       {aviso && (
-        <p role="alert" className="text-body-md text-error">
+        <p role="alert" className="px-1 text-body-md text-error">
           {aviso}
         </p>
       )}
 
-      <div className="flex gap-space-sm">
-        <button type="submit" disabled={guardando} className="rounded-full bg-primary px-space-lg py-space-sm text-label-lg text-on-primary">
+      <div className="flex flex-col gap-2">
+        <Boton type="submit" variante="primarioSuave" icono="check" disabled={guardando} className="w-full">
           Guardar
-        </button>
-        <button type="button" onClick={onCancelar} className="rounded-full bg-surface-container-low px-space-lg py-space-sm text-label-lg text-on-surface-variant">
+        </Boton>
+        <Boton variante="texto" onClick={onCancelar}>
           Cancelar
-        </button>
+        </Boton>
       </div>
     </form>
   );

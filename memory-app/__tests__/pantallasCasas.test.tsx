@@ -75,7 +75,7 @@ describe("Sprint 6: pantallas de casas", () => {
     expect(miembrosEnDetalle()).toEqual(["Ana", "Carla"]);
     expect(within(screen.getByRole("region", { name: "Dirección" })).getByText("Toledo")).toBeInTheDocument();
 
-    await usuario.click(screen.getByRole("link", { name: "Volver" }));
+    await usuario.click(screen.getByRole("button", { name: "Volver" }));
     expect(casasEnLista()).toEqual(["Casa de los abuelosCalle Sol, ToledoAna, Carla"]);
   });
 

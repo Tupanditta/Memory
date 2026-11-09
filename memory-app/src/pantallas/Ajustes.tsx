@@ -1,5 +1,10 @@
 // Ajustes (CU10 a CU12): hora de aviso, guardada en `ajustes.json`, y copia de seguridad.
 import { useState, type FormEvent } from "react";
+import Boton from "../componentes/Boton";
+import Cabecera from "../componentes/Cabecera";
+import Campo from "../componentes/Campo";
+import Pantalla from "../componentes/Pantalla";
+import Tarjeta from "../componentes/Tarjeta";
 import { useApp } from "../estado/contexto";
 import { textoResumen } from "../servicios/intercambioService";
 
@@ -45,47 +50,40 @@ export default function Ajustes() {
   }
 
   return (
-    <main className="flex flex-col gap-space-lg bg-surface px-margin py-space-lg">
-      <h1 className="text-headline-md text-primary">Ajustes</h1>
+    <>
+      <Cabecera />
+      <Pantalla tipo="pestana">
+        <h1 className="text-headline-md text-on-surface">Ajustes</h1>
 
-      <section aria-label="Aviso de fechas" className="flex flex-col gap-space-sm rounded bg-surface-container-lowest p-space-md shadow-sm">
-        <h2 className="text-headline-sm text-on-surface">Aviso de fechas</h2>
-        <p className="text-body-md text-on-surface-variant">
-          Los avisos llegan el día anterior a las {guardada}.
-        </p>
-        <form onSubmit={enviar} className="flex items-end gap-space-sm">
-          <label className="flex flex-col gap-space-xs text-label-md text-on-surface-variant">
-            Hora de aviso
-            <input
-              type="time"
-              value={hora}
-              onChange={(e) => setHora(e.target.value)}
-              className="rounded bg-surface-container-low px-space-md py-space-sm text-body-md text-on-surface"
-            />
-          </label>
-          <button type="submit" disabled={guardando || hora === guardada} className="rounded-full bg-primary px-space-lg py-space-sm text-label-lg text-on-primary disabled:opacity-50">
-            Guardar
-          </button>
-        </form>
-      </section>
+        <Tarjeta elemento="section" aria-label="Aviso de fechas" padding={24} className="flex flex-col gap-4">
+          <h2 className="text-headline-sm text-on-surface">Aviso de fechas</h2>
+          <p className="text-body-md text-on-surface-variant">Los avisos llegan el día anterior a las {guardada}.</p>
+          <form onSubmit={enviar} className="flex items-end gap-2">
+            <Campo etiqueta="Hora de aviso" type="time" value={hora} onChange={(e) => setHora(e.target.value)} className="flex-1" />
+            <Boton type="submit" variante="primarioSuave" disabled={guardando || hora === guardada}>
+              Guardar
+            </Boton>
+          </form>
+        </Tarjeta>
 
-      <section aria-label="Copia de seguridad" className="flex flex-col gap-space-sm rounded bg-surface-container-lowest p-space-md shadow-sm">
-        <h2 className="text-headline-sm text-on-surface">Copia de seguridad</h2>
-        <p className="text-body-md text-on-surface-variant">Exporta todas las personas y casas a un archivo JSON. Importar solo añade lo que no tengas ya.</p>
-        <div className="flex flex-wrap gap-space-sm">
-          <button type="button" onClick={exportar} disabled={ocupado} className="rounded-full bg-primary-fixed px-space-lg py-space-sm text-label-lg text-on-primary-fixed">
-            Exportar
-          </button>
-          <button type="button" onClick={importar} disabled={ocupado} className="rounded-full bg-secondary-fixed px-space-lg py-space-sm text-label-lg text-on-secondary-fixed">
-            Importar
-          </button>
-        </div>
-        {resumen && (
-          <p aria-label="Resumen de importación" className="text-body-md text-on-surface">
-            {resumen}
-          </p>
-        )}
-      </section>
-    </main>
+        <Tarjeta elemento="section" aria-label="Copia de seguridad" padding={24} className="flex flex-col gap-4">
+          <h2 className="text-headline-sm text-on-surface">Copia de seguridad</h2>
+          <p className="text-body-md text-on-surface-variant">Exporta todas las personas y casas a un archivo JSON. Importar solo añade lo que no tengas ya.</p>
+          <div className="flex flex-col gap-2">
+            <Boton variante="azulSuave" icono="ios_share" escala={95} onClick={exportar} disabled={ocupado} className="w-full shadow-sm">
+              Exportar
+            </Boton>
+            <Boton variante="lilaSuave" icono="system_update_alt" escala={95} onClick={importar} disabled={ocupado} className="w-full shadow-sm">
+              Importar
+            </Boton>
+          </div>
+          {resumen && (
+            <p aria-label="Resumen de importación" className="px-1 text-body-md text-on-surface">
+              {resumen}
+            </p>
+          )}
+        </Tarjeta>
+      </Pantalla>
+    </>
   );
 }

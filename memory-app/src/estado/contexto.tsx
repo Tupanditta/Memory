@@ -12,6 +12,7 @@ import { NotificacionesService, type EstadoNotificaciones } from "../servicios/n
 import { crearNotificador, type Notificador } from "../servicios/notificador";
 import { PersonasService } from "../servicios/personasService";
 import { Tienda } from "../servicios/tienda";
+import { crearSplash, fuentesListas, type Splash } from "./arranque";
 
 export type Fase = "cargando" | "listo" | "fallo";
 
@@ -87,6 +88,10 @@ export interface Externos {
   notificador?: Notificador;
   compartidor?: Compartidor;
   selector?: SelectorArchivo;
+  /** Splash de arranque; se oculta al tener fuentes y datos. */
+  splash?: Splash;
+  /** Espera a que las fuentes estén cargadas. */
+  fuentes?: () => Promise<unknown>;
 }
 
 export const AVISO_SIN_PERMISO =
@@ -113,7 +118,9 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
   useEffect(() => {
     let cancelado = false;
     const repositorio = new Repositorio(almacenElegido.current ?? crearAlmacen());
-    repositorio.iniciar().then((resultado) => {
+    const fuentes = externosElegidos.current?.fuentes ?? fuentesListas;
+    // Las pantallas no se pintan hasta tener los datos y las fuentes.
+    Promise.all([repositorio.iniciar(), fuentes()]).then(([resultado]) => {
       if (cancelado) return;
       if (!resultado.ok) {
         despachar({ tipo: "falloCarga", error: resultado.error });
@@ -134,6 +141,12 @@ export function ProveedorApp({ almacen, externos, children }: PropsProveedor) {
       cancelado = true;
     };
   }, []);
+
+  // Con fuentes y datos (o con el error de carga a pantalla completa), se oculta el splash.
+  const cargado = estado.fase !== "cargando";
+  useEffect(() => {
+    if (cargado) void (externosElegidos.current?.splash ?? crearSplash()).ocultar();
+  }, [cargado]);
 
   const ejecutar = useCallback(async <T,>(operacion: (s: Servicios) => Promise<Resultado<T>>): Promise<Resultado<T>> => {
     const s = servicios.current;

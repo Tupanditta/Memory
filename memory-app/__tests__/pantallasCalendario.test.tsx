@@ -169,7 +169,8 @@ describe("Sprint 7: calendario, notificaciones y ajustes en la interfaz", () => 
     await usuario.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent(AVISO_SIN_PERMISO);
-    expect(screen.getByRole("heading", { name: "Ana" })).toBeInTheDocument();
+    // La navegación al detalle puede llegar después del aviso: se espera a que aparezca.
+    expect(await screen.findByRole("heading", { name: "Ana" })).toBeInTheDocument();
     expect(leer("personas.json")).toHaveLength(1);
     expect(notificador.programadas).toEqual([]);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { direccionVacia, type Casa, type Direccion, type Persona } from "../modelos/tipos";
 import { normalizarTexto } from "../utilidades/texto";
+import Boton from "./Boton";
+import Campo from "./Campo";
 import CamposDireccion from "./CamposDireccion";
 
 export interface ValoresCasa {
@@ -22,9 +24,6 @@ interface Props {
 
 export const AVISO_SIN_PERSONAS = "Elige al menos una persona";
 export const AVISO_SIN_APODO = "Escribe el apodo";
-
-const claseCampo = "rounded border border-outline-variant bg-surface-container-lowest p-space-sm text-body-md text-on-surface";
-const claseEtiqueta = "flex flex-col gap-space-xs text-label-md text-on-surface-variant";
 
 export default function FormularioCasa({ inicial, personas, onGuardar, onCancelar }: Props) {
   const [apodo, setApodo] = useState(inicial?.apodo ?? "");
@@ -59,46 +58,43 @@ export default function FormularioCasa({ inicial, personas, onGuardar, onCancela
   }
 
   return (
-    <form onSubmit={enviar} noValidate className="flex flex-col gap-space-lg">
-      <label className={claseEtiqueta}>
-        Apodo
-        <input value={apodo} onChange={(e) => setApodo(e.target.value)} required aria-invalid={aviso === AVISO_SIN_APODO} className={claseCampo} />
-      </label>
+    <form onSubmit={enviar} noValidate className="flex flex-col gap-6">
+      <Campo etiqueta="Apodo" value={apodo} onChange={(e) => setApodo(e.target.value)} required aria-invalid={aviso === AVISO_SIN_APODO} />
 
-      <CamposDireccion valor={direccion} onChange={setDireccion} />
+      <CamposDireccion valor={direccion} onChange={setDireccion} forma="pildora" />
 
-      <fieldset className="flex flex-col gap-space-sm">
-        <legend className="mb-space-sm text-label-lg text-on-surface">¿Quiénes viven aquí?</legend>
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-2 px-1 text-label-lg text-on-surface">¿Quiénes viven aquí?</legend>
         {ordenadas.length === 0 ? (
           <p className="text-body-sm text-outline">Aún no hay personas. Añade una primero.</p>
         ) : (
-          <ul className="flex flex-col gap-space-xs">
+          <ul className="flex flex-col gap-2">
             {ordenadas.map((p) => (
               <li key={p.id}>
-                <label className="flex items-center gap-space-sm rounded bg-surface-container-lowest p-space-sm text-body-md text-on-surface">
-                  <input type="checkbox" checked={seleccion.includes(p.id)} onChange={() => alternar(p.id)} />
+                <label className="flex min-h-12 items-center gap-3 rounded bg-surface-container-lowest px-4 py-2 text-label-lg text-on-surface shadow-sm">
+                  <input className="h-5 w-5 accent-primary" type="checkbox" checked={seleccion.includes(p.id)} onChange={() => alternar(p.id)} />
                   {p.nombre}
                 </label>
               </li>
             ))}
           </ul>
         )}
-        {sinSeleccion && <p className="text-label-sm text-error">{AVISO_SIN_PERSONAS}</p>}
+        {sinSeleccion && <p className="px-1 text-label-sm text-error">{AVISO_SIN_PERSONAS}</p>}
       </fieldset>
 
       {aviso && (
-        <p role="alert" className="text-body-md text-error">
+        <p role="alert" className="px-1 text-body-md text-error">
           {aviso}
         </p>
       )}
 
-      <div className="flex gap-space-sm">
-        <button type="submit" disabled={guardando || sinSeleccion} className="rounded-full bg-primary px-space-lg py-space-sm text-label-lg text-on-primary disabled:opacity-50">
+      <div className="flex flex-col gap-2">
+        <Boton type="submit" variante="primario" icono="check" disabled={guardando || sinSeleccion} className="w-full">
           Guardar
-        </button>
-        <button type="button" onClick={onCancelar} className="rounded-full bg-surface-container-low px-space-lg py-space-sm text-label-lg text-on-surface-variant">
+        </Boton>
+        <Boton variante="texto" onClick={onCancelar}>
           Cancelar
-        </button>
+        </Boton>
       </div>
     </form>
   );
