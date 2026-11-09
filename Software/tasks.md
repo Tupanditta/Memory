@@ -193,25 +193,27 @@ Resultado: `npm run typecheck` sin errores; `npm test` 8 archivos, 82 tests pasa
 ---
 
 #### Sprint 7. Calendario, notificaciones y ajustes
-Estado: pendiente
+Estado: completo
 
 Tareas
-- [ ] Pantalla de calendario con solo cumpleaños y aniversarios, por próxima fecha (CU5).
-- [ ] `notificacionesService`: programar, cancelar y reprogramar todas las notificaciones.
-- [ ] Reprogramar tras cambios en personas o fechas.
-- [ ] Pantalla de ajustes para la hora de aviso (CU10), guardada en `ajustes.json`.
-- [ ] Pedir permiso de notificaciones al guardar la primera fecha.
-- [ ] Tests con el módulo de notificaciones simulado (mock).
-- [ ] En la vista previa web, el servicio de notificaciones no hace nada y no falla.
+- [x] Pantalla de calendario con solo cumpleaños y aniversarios, por próxima fecha (CU5).
+- [x] `notificacionesService`: programar, cancelar y reprogramar todas las notificaciones.
+- [x] Reprogramar tras cambios en personas o fechas.
+- [x] Pantalla de ajustes para la hora de aviso (CU10), guardada en `ajustes.json`.
+- [x] Pedir permiso de notificaciones al guardar la primera fecha.
+- [x] Tests con el módulo de notificaciones simulado (mock).
+- [x] En la vista previa web, el servicio de notificaciones no hace nada y no falla.
 
 Tests de validación
-- [ ] T7.1 El calendario lista solo fechas, ordenadas por la más próxima (RF8).
-- [ ] T7.2 Cada fecha tiene una notificación programada el día anterior a la hora de ajustes (RF9).
-- [ ] T7.3 Borrar una persona o una fecha cancela sus notificaciones.
-- [ ] T7.4 Editar una fecha reprograma su notificación sin duplicarla.
-- [ ] T7.5 Cambiar la hora reprograma todas las notificaciones con la nueva hora (RF10, CU10).
-- [ ] T7.6 Si se deniega el permiso, la app sigue funcionando y avisa al usuario.
-- [ ] T7.7 La hora de ajustes se guarda en `ajustes.json` y se conserva al reabrir (RNF7).
+- [x] T7.1 El calendario lista solo fechas, ordenadas por la más próxima (RF8).
+- [x] T7.2 Cada fecha tiene una notificación programada el día anterior a la hora de ajustes (RF9).
+- [x] T7.3 Borrar una persona o una fecha cancela sus notificaciones.
+- [x] T7.4 Editar una fecha reprograma su notificación sin duplicarla.
+- [x] T7.5 Cambiar la hora reprograma todas las notificaciones con la nueva hora (RF10, CU10).
+- [x] T7.6 Si se deniega el permiso, la app sigue funcionando y avisa al usuario.
+- [x] T7.7 La hora de ajustes se guarda en `ajustes.json` y se conserva al reabrir (RNF7).
+
+Resultado: `npm run typecheck` sin errores; `npm test` 10 archivos, 106 tests pasan (82 de los sprints 0 a 6, 14 en `notificaciones.test.ts` y 10 en `pantallasCalendario.test.tsx`: T7.1 a T7.7 sobre utilidades y servicios y desde la interfaz, más 29/02 en el calendario (T7.1b), aviso anual que nunca cae el 29/02 (T7.2b), ids estables (T7.2c), fallo del sistema de notificaciones (T7.6b), fallo al guardar la hora (T7.7b), sincronizaciones seguidas, `NotificadorCapacitor` con el plugin simulado y vista previa web sin notificador); suite completa ejecutada 4 veces seguidas sin fallos; `npm run build` genera `dist/`. Se comprobó que T7.2 a T7.6 de interfaz fallan si `ejecutar` no reprograma. El mes de `schedule.on` empieza en 0 en Android (`Calendar.MONTH`), fijado con un test. Código nuevo: `utilidades/calendario.ts`, `servicios/notificador.ts`, `servicios/notificacionesService.ts`, `servicios/ajustesService.ts`, `componentes/BannerAviso.tsx`, `pantallas/Calendario.tsx` y `pantallas/Ajustes.tsx`; rutas `/calendario` y `/ajustes` con una barra de pestañas básica (el diseño llega en el Sprint 9). Las notificaciones con la app cerrada se prueban en el móvil (T13).
 
 ---
 
