@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-error": "#ffffff", "on-primary-fixed-variant": "#0f3bad", "on-tertiary-container": "#003126", "on-secondary-fixed": "#1e0060", "surface-variant": "#dbe1ff", "surface-container-high": "#e3e7ff", "inverse-surface": "#272f4a", "surface-container-highest": "#dbe1ff", "on-tertiary": "#ffffff", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#ccbeff", "surface-dim": "#d1d9fb", "secondary-container": "#ac97ff", "on-error-container": "#93000a", "tertiary-fixed": "#a6f2d7", "surface-container-low": "#f2f3ff", "on-tertiary-fixed": "#002118", "tertiary-container": "#569f88", "outline-variant": "#c4c5d5", "on-tertiary-fixed-variant": "#00513f", "on-secondary-container": "#3f288b", "inverse-on-surface": "#eff0ff", "primary": "#3355c6", "on-primary-container": "#002173", "on-background": "#121a34", "tertiary-fixed-dim": "#8bd5bc", "surface-container": "#ebedff", "secondary-fixed": "#e7deff", "primary-fixed-dim": "#b7c4ff", "on-surface-variant": "#444653", "inverse-primary": "#b7c4ff", "background": "#faf8ff", "on-secondary-fixed-variant": "#4b3597", "on-primary": "#ffffff", "secondary": "#634eb1", "tertiary": "#1b6a56", "surface": "#faf8ff", "on-secondary": "#ffffff", "surface-tint": "#3355c6", "primary-fixed": "#dce1ff", "on-primary-fixed": "#001551", "outline": "#747685", "primary-container": "#6b8afd", "surface-bright": "#faf8ff", "on-surface": "#121a34", "error-container": "#ffdad6", "error": "#ba1a1a" }, borderRadius: { DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px" }, spacing: { "space-xs": "0.25rem", "space-lg": "1.5rem", "space-md": "1rem", "gutter": "1rem", "space-sm": "0.5rem", "margin": "1.25rem", "space-xl": "2rem" }, fontFamily: { "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"] }, fontSize: { "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }], "headline-lg": ["30px", { lineHeight: "38px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }], "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;background-color:#faf8ff;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex items-center justify-between px-margin h-16"><div class="flex items-center gap-space-sm"><img alt="Memory Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrDVIX56wUYulyklEhLLlPmvU7EJK_2HGOHxf1ZgALYYSwQHy7ukUdPMfaXm-liCRPc3Bn1WnG8D6LdP_CJQgslYAGPdSp68RILTcMlUyvSgsvlwUhKzN9cLrFNYCjJeA1VMgleKMpT3mghZFRG-HdUhNtGbw6Aydfx5WABEXSlKroKbo_S4RhL-C3pcPbjv8McxxTx8A1ADkZyNLP-tVOVeFw0Lql4-UtZSj7IH_r5_"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">Memory</span><span class="font-label-sm text-label-sm text-outline -mt-1 hidden">Ajustes</span></div></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 px-margin bg-surface"><div class="flex flex-col w-full space-y-space-lg">
+<!-- Relaxing Header Profile / Intro Strip -->
+<div class="flex flex-col space-y-space-xs pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-on-surface tracking-tight">Ajustes y Datos</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+        Sincronizado
+      </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Personaliza tus recordatorios y gestiona la privacidad de tus recuerdos.
+    </p>
+</div>
+<!-- Warm Reminder Illustration / Atmosphere Card -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden shadow-sm bg-surface-container-low flex items-center justify-between px-space-lg">
+<div class="relative z-10 max-w-[62%] flex flex-col space-y-1">
+<span class="font-label-md text-label-md text-primary uppercase tracking-wider">Tranquilidad diaria</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+        Tus recuerdos no se apresuran. Configura momentos serenos para conectar con quienes más quieres.
+      </p>
+</div>
+<div class="relative w-24 h-24 rounded-full overflow-hidden shadow-sm flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A delicate and aesthetic still life photography in soft morning pastel light featuring a clean ceramic coffee cup, a lavender sprig, and an open textured paper journal. Soft periwinkle and lavender undertones, minimal, airy, calm and cozy atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjLsh7d1p61a6HPtXlWadCqEzH1DP3RCybYe_dUH59oS-Q3_flnNAxgXbLTqHOmzXZ4rBRPCrHQHIlHCe8InWU81-5BPLGQgawgHJEaB2e0IR9O6o9RainxkTqKDPoL08NqJFjs8kGcKdG5uRPWTuiEbmDWWF30UcrlW9C03QfvqSLpFs8s3QTfQaPUFW7_TBDH3fodz2YNVnLNhsOoJF1DiJ0R28k_-67gGw8lY7c"/>
+</div>
+</div>
+<!-- Tarjeta: Aviso de fechas -->
+<section class="rounded-lg bg-surface-container-lowest p-space-lg shadow-sm flex flex-col space-y-space-md">
+<!-- Header of card -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[24px]" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-tight">Aviso de fechas</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Notificaciones serenas y puntuales</span>
+</div>
+</div>
+<!-- Explanation -->
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+      Recibirás un aviso el día anterior a cada cumpleaños o aniversario para que siempre tengas tiempo de celebrar.
+    </p>
+<!-- Time Setting Component -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+<span class="font-label-lg text-label-lg text-on-surface">Hora de notificación</span>
+</div>
+<!-- Digital pill readout -->
+<div class="px-3 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed font-headline-sm text-headline-sm font-semibold tracking-tight shadow-sm transition-all duration-200" id="time-display">
+          09:00
+        </div>
+</div>
+<!-- Quick Preset Pills -->
+<div class="flex items-center gap-2 pt-1 overflow-x-auto pb-1">
+<button class="time-chip px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" onclick="setTime('08:00', this)" type="button">
+          08:00
+        </button>
+<button class="time-chip px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-sm active:scale-95 transition-all" onclick="setTime('09:00', this)" type="button">
+          09:00
+        </button>
+<button class="time-chip px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" onclick="setTime('10:30', this)" type="button">
+          10:30
+        </button>
+<button class="time-chip px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-md text-label-md shadow-sm active:scale-95 transition-all" onclick="setTime('20:00', this)" type="button">
+          20:00
+        </button>
+</div>
+<!-- Soft Interactive Slider -->
+<div class="flex flex-col space-y-1.5 pt-1">
+<div class="flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm">
+<span>Mañana temprano</span>
+<span>Noche</span>
+</div>
+<div class="relative w-full flex items-center">
+<input class="w-full h-2 rounded-full appearance-none bg-surface-container-highest accent-primary cursor-pointer focus:outline-none" id="time-slider" max="1320" min="360" oninput="onSliderMove(this.value)" step="30" type="range" value="540"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Tarjeta: Copia de seguridad local -->
+<section class="rounded-lg bg-surface-container-lowest p-space-lg shadow-sm flex flex-col space-y-space-md">
+<!-- Header of card -->
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-tight">Copia de seguridad local</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Control absoluto de tus recuerdos</span>
+</div>
+</div>
+<!-- Explanation & Peace of mind notice -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[20px] mt-0.5">verified_user</span>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+        Tus datos son 100% privados y se guardan solo en tu dispositivo. Puedes exportarlos a un archivo JSON o restaurarlos cuando quieras sin servidores externos.
+      </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col space-y-space-sm pt-space-xs">
+<!-- Botón primario suave: Exportar datos -->
+<button class="w-full min-h-[50px] rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center gap-2 px-space-lg shadow-sm font-label-lg text-label-lg active:scale-95 transition-all" id="btn-export" onclick="simulateExport()" type="button">
+<span class="material-symbols-outlined text-[20px]">ios_share</span>
+<span>Exportar datos (JSON)</span>
+</button>
+<!-- Botón secundario en lavanda pastel: Importar datos -->
+<button class="w-full min-h-[50px] rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center gap-2 px-space-lg shadow-sm font-label-lg text-label-lg active:scale-95 transition-all" id="btn-import" onclick="simulateImport()" type="button">
+<span class="material-symbols-outlined text-[20px]">system_update_alt</span>
+<span>Importar datos (JSON)</span>
+</button>
+</div>
+<!-- Meta: Última exportación y estado -->
+<div class="flex items-center justify-between pt-1 px-1 text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
+<span id="last-export-label">Realizada el 10 Mar 2026 a las 18:30</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container font-label-sm text-label-sm">24 KB</span>
+</div>
+</section>
+<!-- Interactive Feedback Pill Toast (Hidden by default) -->
+<div class="opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 flex items-center justify-center" id="status-toast">
+<div class="px-4 py-2 rounded-full bg-inverse-surface text-inverse-on-surface font-label-md text-label-md shadow-md flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed text-[18px]">done</span>
+<span id="toast-text">Archivo exportado exitosamente</span>
+</div>
+</div>
+<!-- Decorative Quote Card / Gentle Human Touch -->
+<div class="p-space-md rounded-lg bg-surface-container-high/60 flex items-center gap-space-md shadow-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center flex-shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic">
+      "Recordar es volver a pasar por el corazón."
+    </p>
+</div>
+<!-- Minimalist Footer -->
+<footer class="pt-space-xs pb-space-sm text-center flex flex-col items-center space-y-1">
+<p class="font-label-sm text-label-sm text-outline">
+      Memory v1.0.0 • Hecho para recordar lo importante
+    </p>
+<div class="flex items-center gap-2 text-outline-variant font-label-sm text-label-sm">
+<span>Privacidad local</span>
+<span>•</span>
+<span>Cifrado nativo</span>
+</div>
+</footer>
+</div>
+<script>
+  function formatMinutesToTime(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const hh = String(hours).padStart(2, '0');
+    const mm = String(minutes).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  function onSliderMove(val) {
+    const formatted = formatMinutesToTime(parseInt(val, 10));
+    const display = document.getElementById('time-display');
+    if (display) display.textContent = formatted;
+    
+    // Clear active preset button style if custom moved
+    document.querySelectorAll('.time-chip').forEach(btn => {
+      btn.classList.remove('bg-primary-container', 'text-on-primary-container');
+      btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+      if (btn.textContent.trim() === formatted) {
+        btn.classList.add('bg-primary-container', 'text-on-primary-container');
+        btn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+      }
+    });
+  }
+
+  function setTime(timeStr, btnElement) {
+    const display = document.getElementById('time-display');
+    if (display) display.textContent = timeStr;
+
+    const parts = timeStr.split(':');
+    const mins = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    const slider = document.getElementById('time-slider');
+    if (slider) slider.value = mins;
+
+    document.querySelectorAll('.time-chip').forEach(b => {
+      b.classList.remove('bg-primary-container', 'text-on-primary-container');
+      b.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+    });
+
+    if (btnElement) {
+      btnElement.classList.add('bg-primary-container', 'text-on-primary-container');
+      btnElement.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('status-toast');
+    const label = document.getElementById('toast-text');
+    if (!toast || !label) return;
+    label.textContent = message;
+    toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+      toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 2400);
+  }
+
+  function simulateExport() {
+    const btn = document.getElementById('btn-export');
+    if (btn) btn.classList.add('scale-95');
+    setTimeout(() => {
+      if (btn) btn.classList.remove('scale-95');
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const lastExp = document.getElementById('last-export-label');
+      if (lastExp) lastExp.textContent = `Realizada hoy a las ${timeStr}`;
+      showToast('Copia exportada en formato JSON');
+    }, 200);
+  }
+
+  function simulateImport() {
+    const btn = document.getElementById('btn-import');
+    if (btn) btn.classList.add('scale-95');
+    setTimeout(() => {
+      if (btn) btn.classList.remove('scale-95');
+      showToast('Datos restaurados correctamente');
+    }, 200);
+  }
+</script></main><div class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none px-margin mb-space-sm"><nav class="pointer-events-auto w-full mx-auto max-w-sm h-16 rounded-full bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_8px_24px_-4px_rgba(107,138,253,0.15)] flex items-center justify-around px-space-sm" data-active-classes="bg-primary/10 text-primary"><a class="flex flex-col items-center justify-center gap-1 px-space-md py-1.5 rounded-full text-on-surface-variant hover:text-primary transition-all duration-200 min-w-[64px] min-h-[44px]" data-path="inicio" href="#"><span class="material-symbols-outlined text-[22px]">cottage</span><span class="font-label-sm text-label-sm">Inicio</span></a><a class="flex flex-col items-center justify-center gap-1 px-space-md py-1.5 rounded-full text-on-surface-variant hover:text-primary transition-all duration-200 min-w-[64px] min-h-[44px]" data-path="calendario" href="#"><span class="material-symbols-outlined text-[22px]">calendar_month</span><span class="font-label-sm text-label-sm">Calendario</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-1 px-space-md py-1.5 rounded-full transition-all duration-200 min-w-[64px] min-h-[44px] bg-primary/10 text-primary" data-path="ajustes" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm">Ajustes</span></a></nav></div></body></html>

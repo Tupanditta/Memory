@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Memory</string>
+    <string name="title_activity_main">Memory</string>
+    <string name="package_name">com.tupanditta.memory</string>
+    <string name="custom_url_scheme">com.tupanditta.memory</string>
+</resources>
